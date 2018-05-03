@@ -48,7 +48,7 @@ public class MainActivity extends DatabaseActivity {
         try {
             unbinder = ButterKnife.bind(this);
             setSupportActionBar(toolbar);
-            Objects.requireNonNull(getSupportActionBar()).setTitle("BlaBla");
+            Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.app_name);
 
             SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(sectionsPagerAdapter);

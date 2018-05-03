@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Chatein</string>
     <string name="create_new_account">Create new Account</string>
-    <string name="welcome_to_blabla">Welcome to BlaBla</string>
+    <string name="welcome_to_chatein">Welcome to Chatein</string>
     <string name="full_name">Full Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -16,7 +16,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="dp">dp</string>
     <string name="back_button">Back button</string>
-    <string name="default_status">Hi there! I am using the new BlaBla app.</string>
+    <string name="default_status">Hi there! I am using the new Chatein app.</string>
     <string name="status">Status</string>
     <string name="change_your_status">Change your status</string>
     <string name="save">Save</string>
