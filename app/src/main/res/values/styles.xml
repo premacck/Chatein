@@ -1,0 +1,54 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.MessageEditText">
+        <item name="android:minHeight">@dimen/action_bar_height</item>
+        <item name="android:maxHeight">100dp</item>
+        <item name="android:hint">@string/start_typing</item>
+        <item name="android:imeOptions">normal|flagNoEnterAction</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.SelectableTextView">
+        <item name="android:enabled">true</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:longClickable">true</item>
+    </style>
+
+    <style name="AppTheme.SelfMessageLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin</item>
+        <item name="android:layout_marginStart">@dimen/action_bar_height</item>
+        <item name="android:layout_marginTop">@dimen/chat_padding</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingEnd">@dimen/chat_padding</item>
+        <item name="android:paddingStart">@dimen/chat_padding</item>
+        <item name="android:paddingTop">@dimen/chat_padding</item>
+    </style>
+
+    <style name="AppTheme.FriendsMessageLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:layout_marginEnd">@dimen/action_bar_height</item>
+        <item name="android:layout_marginStart">@dimen/default_margin</item>
+        <item name="android:layout_marginTop">@dimen/chat_padding</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingEnd">@dimen/chat_padding</item>
+        <item name="android:paddingStart">@dimen/chat_padding</item>
+        <item name="android:paddingTop">@dimen/chat_padding</item>
+    </style>
+
+</resources>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#424242"
+    tools:context=".ui.social.ProfileActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <ImageView
+            android:id="@+id/dp"
+            android:layout_width="match_parent"
+            android:layout_height="320dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimaryDark"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/dp" />
+
+        <ProgressBar
+            android:id="@+id/layout_progress"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:indeterminate="true"
+            android:layout_marginTop="-12dp"
+            android:layout_below="@+id/dp"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="-40dp"
+            android:layout_below="@+id/dp"
+            android:orientation="horizontal"
+            android:padding="@dimen/default_margin"
+            android:animateLayoutChanges="true">
+
+            <Button
+                android:id="@+id/action_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:visibility="gone"
+                android:paddingStart="@dimen/default_margin"
+                android:paddingEnd="@dimen/default_margin"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/bg_social_btn"/>
+
+            <ImageView
+                android:id="@+id/delete_request_btn"
+                android:layout_width="@dimen/action_bar_height"
+                android:layout_height="@dimen/action_bar_height"
+                android:scaleType="center"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_clear_shadow"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/back_button" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dp"
+            android:layout_marginTop="40dp"
+            android:paddingStart="@dimen/default_margin"
+            android:paddingEnd="@dimen/default_margin"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:gravity="center_vertical"
+            android:hint="@string/no_status"
+            android:textColorHint="@color/material_grey300"
+            android:padding="@dimen/default_margin"
+            android:textColor="@android:color/white" />
+
+        <!--<TextView
+            android:id="@+id/friend_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/status"
+            android:gravity="center_vertical"
+            android:hint="@string/no_friends"
+            android:layout_marginTop="34dp"
+            android:textColorHint="@color/material_grey300"
+            android:padding="@dimen/default_margin"
+            android:textColor="@android:color/white" />-->
+
+        <ImageView
+            android:id="@+id/back_btn"
+            android:layout_width="@dimen/action_bar_height"
+            android:layout_height="@dimen/action_bar_height"
+            android:scaleType="center"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="@dimen/status_bar_height"
+            app:srcCompat="@drawable/ic_arrow_back_shadow"
+            android:contentDescription="@string/back_button" />
+
+    </RelativeLayout>
+
+</ScrollView>

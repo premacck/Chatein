@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.chat.ChatActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/chat_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/action_bar_height"
+            app:contentInsetStart="0dp">
+
+            <include layout="@layout/chat_app_bar" />
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chats_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/default_margin"
+        android:paddingBottom="66dp"
+        android:clipToPadding="false"
+        android:background="@drawable/chat_background_2"
+        app:layoutManager="com.prembros.chatein.util.CustomLinearLayoutManager"
+        tools:listitem="@layout/item_chat_friends_first"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_card_no_margin_white"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:id="@+id/chat_add"
+            android:layout_width="@dimen/action_bar_height"
+            android:layout_height="@dimen/action_bar_height"
+            android:src="@drawable/ic_add"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:scaleType="center"
+            android:contentDescription="@string/add_media" />
+
+        <EditText
+            android:id="@+id/chat_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.MessageEditText"
+            android:layout_weight="9"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            tools:ignore="LabelFor" />
+
+        <ImageView
+            android:id="@+id/chat_send"
+            android:layout_width="@dimen/action_bar_height"
+            android:layout_height="@dimen/action_bar_height"
+            android:src="@drawable/ic_send"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:scaleType="center"
+            android:contentDescription="@string/send_message" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/transition_full_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:visibility="invisible" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/transition_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</android.support.design.widget.CoordinatorLayout>

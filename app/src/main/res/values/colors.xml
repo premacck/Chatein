@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00acc1</color>
+    <color name="colorPrimaryDark">#00838f</color>
+    <color name="colorAccent">#00bfa5</color>
+    <color name="material_grey50">#FAFAFA</color>
+    <color name="material_grey100">#F5F5F5</color>
+    <color name="material_grey200">#EEEEEE</color>
+    <color name="material_grey300">#E0E0E0</color>
+    <color name="transparent">#00000000</color>
+    <color name="colorShadow">#BDBDBD</color>
+    <color name="chatSelf">#00BFA5</color>
+    <color name="colorShadowTranslucent">#66000000</color>
+    <color name="colorRippleLight">#bbffffff</color>
+    <color name="colorRippleDark">#bb757575</color>
+</resources>

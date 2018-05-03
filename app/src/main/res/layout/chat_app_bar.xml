@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/action_bar_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimary"
+    android:orientation="horizontal"
+    tools:ignore="SpUsage">
+
+    <LinearLayout
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/action_bar_height"
+            android:scaleType="center"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:srcCompat="@drawable/ic_arrow_back"
+            android:contentDescription="@string/back_button" />
+
+        <ImageView
+            android:id="@+id/dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/dp"
+            android:src="@drawable/ic_add_user_small"
+            android:layout_marginEnd="8dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bio"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:orientation="vertical"
+        android:animateLayoutChanges="true"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/last_seen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:paddingBottom="2dp"
+            android:textSize="10dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

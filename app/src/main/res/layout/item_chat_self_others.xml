@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/root_layout"
+    android:tag="@id/tag_holder"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        style="@style/AppTheme.SelfMessageLayout"
+        android:background="@drawable/bg_chat_self_others">
+
+        <FrameLayout
+            android:id="@+id/text_message_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:minWidth="100dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                style="@style/AppTheme.SelectableTextView"
+                android:textColor="@android:color/white"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/image_message_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chat_self_others"
+            android:animateLayoutChanges="true"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/chat_image"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/image_message" />
+
+            <fr.castorflex.android.circularprogressbar.CircularProgressBar
+                android:id="@+id/image_progress"
+                android:layout_width="@dimen/action_bar_height"
+                android:layout_height="@dimen/action_bar_height"
+                android:indeterminate="true"
+                android:layout_gravity="center"
+                app:cpb_color="@android:color/white"
+                app:cpb_stroke_width="4dp"/>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:drawablePadding="4dp"
+            android:paddingTop="@dimen/time_stamp_padding"
+            android:textSize="@dimen/size_time_stamp"
+            android:textColor="@color/material_grey200"/>
+
+    </LinearLayout>
+
+</FrameLayout>
