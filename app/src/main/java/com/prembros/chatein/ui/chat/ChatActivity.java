@@ -103,6 +103,10 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     private String lastKey;
     private String previousKey;
     private String friendName;
+    private Query initialChatQuery;
+    private Query moreChatsQuery;
+    private ChatEventListener initialChatListener;
+    private ChatEventListener moreChatListener;
 
     public static void launchChatActivity(@NotNull Context from, String userId) {
         Intent intent = new Intent(from, ChatActivity.class);
@@ -140,8 +144,8 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     private void loadChats() {
-        final Query initialChatQuery = getMessagesRef(friendUserId).limitToLast(TOTAL_ITEMS_TO_LOAD);
-        initialChatQuery.addChildEventListener(new ChatEventListener() {
+        initialChatQuery = getMessagesRef(friendUserId).limitToLast(TOTAL_ITEMS_TO_LOAD);
+        initialChatListener = new ChatEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 try {
@@ -159,11 +163,10 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
-                    initialChatQuery.removeEventListener(this);
                 }
             }
-        });
+        };
+        initialChatQuery.addChildEventListener(initialChatListener);
     }
 
     private void setupActionBar() {
@@ -294,8 +297,8 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     private void loadMoreChats() {
-        final Query moreChatsQuery = getMessagesRef(friendUserId).orderByKey().endAt(lastKey).limitToLast(TOTAL_ITEMS_TO_LOAD + 1);
-        moreChatsQuery.addChildEventListener(new ChatEventListener() {
+        moreChatsQuery = getMessagesRef(friendUserId).orderByKey().endAt(lastKey).limitToLast(TOTAL_ITEMS_TO_LOAD + 1);
+        moreChatListener = new ChatEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 try {
@@ -319,11 +322,10 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
                 } catch (Exception e) {
                     e.printStackTrace();
                     loading = false;
-                } finally {
-                    moreChatsQuery.removeEventListener(this);
                 }
             }
-        });
+        };
+        moreChatsQuery.addChildEventListener(moreChatListener);
     }
 
 //    private void updateImageListIfAvailable(Chat chat, int position) {
@@ -461,6 +463,8 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     @Override protected void onDestroy() {
+        if (initialChatQuery != null) initialChatQuery.removeEventListener(initialChatListener);
+        if (moreChatsQuery != null) moreChatsQuery.removeEventListener(moreChatListener);
         getUsersRef().child(friendUserId).removeEventListener(friendInfoListener);
         getMyChatRef().removeEventListener(myChatListener);
         adapter = null;

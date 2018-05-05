@@ -32,7 +32,7 @@
             android:layout_height="250dp"
             android:indeterminate="true"
             android:layout_centerInParent="true"
-            style="@style/AppTheme.WhiteAccent"/>
+            android:theme="@style/AppTheme.WhiteAccent"/>
 
         <ImageView
             android:id="@+id/dp"
@@ -49,8 +49,6 @@
             android:scaleType="centerCrop"
             android:layout_alignBottom="@+id/dp"
             android:layout_alignEnd="@+id/dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="10dp"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_add_dp"
             android:contentDescription="@string/dp" />

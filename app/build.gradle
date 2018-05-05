@@ -6,7 +6,6 @@ apply plugin: 'kotlin-android-extensions'
 
 ext {
     supportLibVersion = "27.1.1"
-    firebaseVersion = "15.0.0"
     firebaseUiVersion = "3.3.1"
     archLifecycleVersion = "1.1.1"
     daggerVersion = "2.13"
@@ -40,10 +39,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 //    Firebase
-    implementation "com.google.firebase:firebase-database:$firebaseVersion"
-    implementation "com.google.firebase:firebase-auth:$firebaseVersion"
-    implementation "com.google.firebase:firebase-storage:$firebaseVersion"
-    implementation "com.google.firebase:firebase-messaging:$firebaseVersion"
+    implementation 'com.google.firebase:firebase-database:15.0.1'
+    implementation 'com.google.firebase:firebase-auth:15.1.0'
+    implementation 'com.google.firebase:firebase-storage:15.0.2'
+    implementation 'com.google.firebase:firebase-messaging:15.0.2'
     implementation "com.firebaseui:firebase-ui-database:$firebaseUiVersion"
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
 
@@ -93,11 +92,6 @@ configurations.all {
                 details.useVersion "$supportLibVersion"
             }
         }
-//        if (requested.group == 'com.google.firebase') {
-//            if (!requested.name.startsWith("multidex")) {
-//                details.useVersion "$firebaseVersion"
-//            }
-//        }
     }
 }
 

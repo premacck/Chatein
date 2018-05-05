@@ -58,7 +58,7 @@
                 android:layout_height="@dimen/action_bar_height"
                 android:indeterminate="true"
                 android:layout_gravity="center"
-                style="@style/AppTheme.WhiteAccent"/>
+                android:theme="@style/AppTheme.WhiteAccent"/>
 
         </FrameLayout>
 
