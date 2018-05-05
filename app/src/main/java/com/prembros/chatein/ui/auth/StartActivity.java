@@ -1,12 +1,13 @@
-package com.prembros.chatein;
+package com.prembros.chatein.ui.auth;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,9 +26,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.jaeger.library.StatusBarUtil;
-import com.prembros.chatein.base.BaseActivity;
+import com.prembros.chatein.R;
 import com.prembros.chatein.data.model.UserBuilder;
+import com.prembros.chatein.ui.base.BaseAuthActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,12 +44,13 @@ import static com.prembros.chatein.ui.main.MainActivity.launchMainActivity;
 import static com.prembros.chatein.util.CommonUtils.makeSnackBar;
 import static com.prembros.chatein.util.Constants.USERS;
 
-public class StartActivity extends BaseActivity {
+public class StartActivity extends BaseAuthActivity {
 
     private static final int RC_SIGN_IN = 101;
 
-    @BindView(R.id.textView) TextView textView;
-    private ProgressDialog progressDialog;
+    @BindView(R.id.root_layout) CoordinatorLayout layout;
+
+    private AnimationDrawable anim;
 
     public static void launchStartActivity(@NotNull Context from) {
         from.startActivity(new Intent(from, StartActivity.class));
@@ -57,8 +59,21 @@ public class StartActivity extends BaseActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        StatusBarUtil.setTransparentForImageView(StartActivity.this, textView);
         unbinder = ButterKnife.bind(this);
+
+        anim = (AnimationDrawable) layout.getBackground();
+        anim.setEnterFadeDuration(2000);
+        anim.setExitFadeDuration(4000);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        if (anim != null && !anim.isRunning()) anim.start();
+    }
+
+    @Override protected void onPause() {
+        super.onPause();
+        if (anim != null && anim.isRunning()) anim.stop();
     }
 
     @OnClick(R.id.register_btn) public void startRegistration() {
@@ -89,18 +104,18 @@ public class StartActivity extends BaseActivity {
                     handleGoogleSignIn(account);
                 else Log.d("GOOGLE_SIGN_IN: ", "account is null!!!!");
             }
-            else makeSnackBar(textView, "Google sign in failed!");
+            else makeSnackBar(layout, "Google sign in failed!");
         }
     }
 
     private void handleGoogleSignIn(@NotNull final GoogleSignInAccount account) {
 //        saveUserAccount(getApplicationContext(), getAccount(account));
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        viewModel.getAuth().signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {
-                            makeSnackBar(textView, "Authentication Failed");
+                            makeSnackBar(layout, "Authentication Failed");
                             Log.e("handleGoogleSignIn", "signInWithCredential:failure", task.getException());
                         } else {
 //                            Sign in Successful
@@ -117,8 +132,7 @@ public class StartActivity extends BaseActivity {
 
     private void registerUser(@NotNull final GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        viewModel.getAuth().signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override public void onComplete(@NonNull Task<AuthResult> task) {
                         try {
                             if (task.isSuccessful()) {
@@ -161,7 +175,7 @@ public class StartActivity extends BaseActivity {
                                     e.printStackTrace();
                                 }
                                 progressDialog.hide();
-                                makeSnackBar(textView, error);
+                                makeSnackBar(layout, error);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

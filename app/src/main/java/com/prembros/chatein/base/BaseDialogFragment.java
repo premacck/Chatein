@@ -9,7 +9,7 @@ import butterknife.Unbinder;
  * Created by Prem$ on 3/19/2018.
  */
 
-public class BaseDialogFragment extends DialogFragment {
+public abstract class BaseDialogFragment extends DialogFragment {
 
     protected Unbinder unbinder;
 

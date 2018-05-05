@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.prembros.chatein.ui.auth.RegisterActivity
+import com.prembros.chatein.ui.auth.StartActivity
 import com.prembros.chatein.ui.main.MainActivity
 
 class SplashScreenActivity : AppCompatActivity() {
@@ -17,7 +17,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         startActivity(Intent(
                 this,
-                if (mFirebaseUser == null) RegisterActivity::class.java else MainActivity::class.java
+                if (mFirebaseUser == null) StartActivity::class.java else MainActivity::class.java
         ))
         finish()
     }

@@ -20,9 +20,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.prembros.chatein.R;
@@ -43,9 +41,6 @@ import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
 import static com.prembros.chatein.util.CommonUtils.makeSnackBar;
 import static com.prembros.chatein.util.Constants.DEFAULT;
-import static com.prembros.chatein.util.Constants.ONLINE;
-import static com.prembros.chatein.util.Constants.PROFILE_IMAGES;
-import static com.prembros.chatein.util.Constants.THUMBS;
 import static com.prembros.chatein.util.ViewUtils.compressImage;
 
 public class AccountSettingsActivity extends DatabaseActivity {
@@ -58,10 +53,6 @@ public class AccountSettingsActivity extends DatabaseActivity {
     @BindView(R.id.status) TextView status;
     @BindView(R.id.progress_bar) CircularProgressBar progressBar;
 
-    private StorageReference storageReference;
-    private String currentUserId;
-    private boolean started;
-
     public static void launchAccountSettingsActivity(@NotNull Context from) {
         from.startActivity(new Intent(from, AccountSettingsActivity.class));
     }
@@ -71,32 +62,16 @@ public class AccountSettingsActivity extends DatabaseActivity {
         setContentView(R.layout.activity_account_settings);
         unbinder = ButterKnife.bind(this);
         progressBar.setVisibility(View.VISIBLE);
-        if (currentUser != null) {
-            currentUserId = currentUser.getUid();
-            userDatabase.keepSynced(true);
-            storageReference = FirebaseStorage.getInstance().getReference();
-            updateUI();
-        }
-    }
-
-    @Override public void onStart() {
-        super.onStart();
-        started = true;
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) userDatabase.child(ONLINE).setValue(true);
-    }
-
-    @Override protected void onStop() {
-        super.onStop();
-        started = false;
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) userDatabase.child(ONLINE).setValue(false);
+        if (currentUser != null) updateUI();
     }
 
     private void updateUI() {
         try {
             if (currentUser != null) {
-                userDatabase.addValueEventListener(new CustomValueEventListener() {
+                currentUserRef.addValueEventListener(new CustomValueEventListener() {
                     @Override public void onDataChange(DataSnapshot dataSnapshot) {
                         if (started) {
+                            progressBar.setVisibility(View.VISIBLE);
                             User user = new User(dataSnapshot);
                             glide.load(user.getProfile_image())
                                     .apply(RequestOptions.circleCropTransform()
@@ -105,13 +80,13 @@ public class AccountSettingsActivity extends DatabaseActivity {
                                     .listener(new RequestListener<Drawable>() {
                                         @Override public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                                               Target<Drawable> target, boolean isFirstResource) {
-                                            progressBar.setVisibility(View.GONE);
+                                            progressBar.setVisibility(View.INVISIBLE);
                                             return false;
                                         }
 
                                         @Override public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
                                                                                  DataSource dataSource, boolean isFirstResource) {
-                                            progressBar.setVisibility(View.GONE);
+                                            progressBar.setVisibility(View.INVISIBLE);
                                             return false;
                                         }
                                     })
@@ -176,7 +151,7 @@ public class AccountSettingsActivity extends DatabaseActivity {
                     final byte[] thumbByteData = compressImage(this, resultUri);
 
 //                    Database paths of original image
-                    StorageReference imagePath = storageReference.child(PROFILE_IMAGES).child(currentUserId + ".jpg");
+                    StorageReference imagePath = viewModel.getProfileImagesRef().child(currentUserId + ".jpg");
 
 //                    First upload the original image
                     imagePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -202,16 +177,15 @@ public class AccountSettingsActivity extends DatabaseActivity {
 
     private void uploadThumbnailAndUpdateDatabase(byte[] thumbByteData, final String imageUrl) {
 //        Database paths of original image
-        StorageReference thumbPath = storageReference.child(PROFILE_IMAGES).child(THUMBS).child(currentUserId + ".jpg");
+        StorageReference thumbPath = viewModel.getThumbImagesRef().child(currentUserId + ".jpg");
 //        Uploading thumbnail
         thumbPath.putBytes(thumbByteData).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                progressBar.setVisibility(View.GONE);
+                if (started) progressBar.setVisibility(View.INVISIBLE);
                 if (task.isSuccessful()) {
                     final String thumbUrl = Objects.requireNonNull(task.getResult().getDownloadUrl()).toString();
-
 //                    if both the images are uploaded, update the corresponding values in database.
-                    userDatabase.updateChildren(
+                    currentUserRef.updateChildren(
                             UserUpdater.Companion.getNew()
                                     .setProfileImage(imageUrl)
                                     .setThumbImage(thumbUrl)

@@ -35,7 +35,7 @@ import com.prembros.chatein.data.model.UpdateRequest;
 import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.data.service.VideoUploadReceiver;
 import com.prembros.chatein.ui.base.DatabaseActivity;
-import com.prembros.chatein.ui.main.ImagePagerAdapter;
+import com.prembros.chatein.ui.main.adapter.ImagePagerAdapter;
 import com.prembros.chatein.util.Annotations.ChatType;
 import com.prembros.chatein.util.Annotations.UploadCallback;
 import com.prembros.chatein.util.ChatEventListener;
@@ -126,10 +126,10 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
             CustomLinearLayoutManager manager = new CustomLinearLayoutManager(this);
             manager.setStackFromEnd(true);
             recyclerView.setLayoutManager(manager);
-            adapter = new ChatAdapter(chatList, currentUser.getUid(), glide, this);
+            adapter = new ChatAdapter(chatList, currentUserId, glide, this);
             recyclerView.setAdapter(adapter);
 
-            root.child(CHAT).child(currentUser.getUid()).child(friendUserId).child(SEEN).setValue(true);
+            root.child(CHAT).child(currentUserId).child(friendUserId).child(SEEN).setValue(true);
 
             loadMessages();
             setupActionBar();
@@ -144,23 +144,24 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     private void loadMessages() {
-        Query messageQuery = root.child(MESSAGES).child(currentUser.getUid()).child(friendUserId)
+        Query messageQuery = root.child(MESSAGES).child(currentUserId).child(friendUserId)
                 .limitToLast(TOTAL_ITEMS_TO_LOAD);
         messageQuery.addChildEventListener(new ChatEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 try {
-                    Chat chat = dataSnapshot.getValue(Chat.class);
-                    chatList.add(chat);
-                    if (chatList.size() == 1) {
-                        lastKey = dataSnapshot.getKey();
-                        previousKey = dataSnapshot.getKey();
+                    if (started) {
+                        Chat chat = dataSnapshot.getValue(Chat.class);
+                        chatList.add(chat);
+                        if (chatList.size() == 1) {
+                            lastKey = dataSnapshot.getKey();
+                            previousKey = dataSnapshot.getKey();
+                        }
+                        adapter.notifyItemInserted(chatList.size() - 1);
+                        pagerAdapter.notifyDataSetChanged();
+                        recyclerView.scrollToPosition(chatList.size() - 1);
+//                        updateImageListIfAvailable(chat, chatList.indexOf(chat));
                     }
-                    adapter.notifyItemInserted(chatList.size() - 1);
-                    pagerAdapter.notifyDataSetChanged();
-                    recyclerView.scrollToPosition(chatList.size() - 1);
-
-//                    updateImageListIfAvailable(chat, chatList.indexOf(chat));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -174,7 +175,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     try {
-                        if (dataSnapshot != null && dp != null && name != null && lastSeen != null) {
+                        if (started && dataSnapshot != null && dp != null && name != null && lastSeen != null) {
                             User user = new User(dataSnapshot);
                             try {
                                 if (!Objects.equals(user.getThumb_image(), DEFAULT)) {
@@ -217,10 +218,10 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     private void updateChatValueInDatabase() {
-        root.child(CHAT).child(currentUser.getUid()).addValueEventListener(new CustomValueEventListener() {
+        root.child(CHAT).child(currentUserId).addValueEventListener(new CustomValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.hasChild(friendUserId)) {
+                if (started && !dataSnapshot.hasChild(friendUserId)) {
 //                    Create chat
                     Map chatAddMap = UpdateRequest.forMapOnly()
                             .put(SEEN, false)
@@ -294,27 +295,29 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     private void loadMoreMessages() {
-        Query messageQuery = root.child(MESSAGES).child(currentUser.getUid()).child(friendUserId)
+        Query messageQuery = root.child(MESSAGES).child(currentUserId).child(friendUserId)
                 .orderByKey().endAt(lastKey).limitToLast(TOTAL_ITEMS_TO_LOAD + 1);
         messageQuery.addChildEventListener(new ChatEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 try {
-                    Chat chat = dataSnapshot.getValue(Chat.class);
+                    if (started) {
+                        Chat chat = dataSnapshot.getValue(Chat.class);
 //                    Load everything except the duplicate last key
-                    if (!previousKey.equals(dataSnapshot.getKey()))
-                        chatList.add(itemPosition++, chat);
-                    else
-                        previousKey = lastKey;
+                        if (!previousKey.equals(dataSnapshot.getKey()))
+                            chatList.add(itemPosition++, chat);
+                        else
+                            previousKey = lastKey;
 
-                    adapter.notifyDataSetChanged();
-                    pagerAdapter.notifyDataSetChanged();
-                    if (itemPosition == 1) lastKey = dataSnapshot.getKey();
-                    ((CustomLinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(15, 0);
+                        adapter.notifyDataSetChanged();
+                        pagerAdapter.notifyDataSetChanged();
+                        if (itemPosition == 1) lastKey = dataSnapshot.getKey();
+                        ((CustomLinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(15, 0);
 
 //                    updateImageListIfAvailable(chat, chatList.indexOf(chat));
 
-                    if (itemPosition == 9) loading = false;
+                        if (itemPosition == 9) loading = false;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     loading = false;
@@ -352,7 +355,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     @OnClick(R.id.chat_send) public void sendTextMessage() {
         String message = chatMessageView.getText().toString();
         if (!TextUtils.isEmpty(message)) {
-            DatabaseReference userMessagePush = root.child(MESSAGES).child(currentUser.getUid()).child(friendUserId).push();
+            DatabaseReference userMessagePush = root.child(MESSAGES).child(currentUserId).child(friendUserId).push();
             String pushId = "/" + userMessagePush.getKey();
 
             updateFirebaseDatabase(pushId, message, ChatType.TEXT);
@@ -378,7 +381,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
-                DatabaseReference userMessagePush = root.child(MESSAGES).child(currentUser.getUid()).child(friendUserId).push();
+                DatabaseReference userMessagePush = root.child(MESSAGES).child(currentUserId).child(friendUserId).push();
                 final String pushId = userMessagePush.getKey();
 
                 updateFirebaseDatabase(pushId, DEFAULT, ChatType.IMAGE);
@@ -386,7 +389,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
                 disableView(sendMessage, false);
 
                 launchUploadService(
-                        this, pushId, resultUri, friendName, currentUser.getUid(), friendUserId,
+                        this, pushId, resultUri, friendName, currentUserId, friendUserId,
                         new VideoUploadReceiver(new Handler()).setReceiver(new VideoUploadReceiver.Receiver() {
                             @Override
                             public void onReceiverResult(@UploadCallback int resultCode, Bundle resultData) {
@@ -422,7 +425,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
                 .put(SEEN, false)
                 .put(TYPE, chatType)
                 .put(TIME_STAMP, ServerValue.TIMESTAMP)
-                .put(FROM, currentUser.getUid())
+                .put(FROM, currentUserId)
                 .get();
 
         UpdateRequest.forDatabase(root)
@@ -432,11 +435,11 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     private void setSeenValues() {
-        root.child(CHAT).child(currentUser.getUid()).child(friendUserId).child(SEEN).setValue(true);
-        root.child(CHAT).child(currentUser.getUid()).child(friendUserId).child(TIME_STAMP).setValue(ServerValue.TIMESTAMP);
+        root.child(CHAT).child(currentUserId).child(friendUserId).child(SEEN).setValue(true);
+        root.child(CHAT).child(currentUserId).child(friendUserId).child(TIME_STAMP).setValue(ServerValue.TIMESTAMP);
 
-        root.child(CHAT).child(friendUserId).child(currentUser.getUid()).child(SEEN).setValue(false);
-        root.child(CHAT).child(friendUserId).child(currentUser.getUid()).child(TIME_STAMP).setValue(ServerValue.TIMESTAMP);
+        root.child(CHAT).child(friendUserId).child(currentUserId).child(SEEN).setValue(false);
+        root.child(CHAT).child(friendUserId).child(currentUserId).child(TIME_STAMP).setValue(ServerValue.TIMESTAMP);
     }
 
     @NonNull @Contract(pure = true) private DatabaseReference.CompletionListener getCompletionListener() {
@@ -450,11 +453,11 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     @NonNull private String getMyBranch() {
-        return currentUser.getUid() + "/" + friendUserId;
+        return currentUserId + "/" + friendUserId;
     }
 
     @NonNull private String getFriendsBranch() {
-        return friendUserId + "/" + currentUser.getUid();
+        return friendUserId + "/" + currentUserId;
     }
 
     @Override protected void onDestroy() {

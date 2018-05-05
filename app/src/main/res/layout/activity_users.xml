@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/material_grey200"
-    tools:context=".ui.social.UsersActivity">
+    tools:context=".ui.social.UsersListActivity">
 
-    <include layout="@layout/app_bar_layout" android:id="@+id/users_toolbar"/>
+    <include layout="@layout/app_bar_layout"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/users_list"

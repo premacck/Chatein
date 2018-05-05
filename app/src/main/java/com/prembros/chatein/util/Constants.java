@@ -4,10 +4,13 @@ package com.prembros.chatein.util;
 public class Constants {
 
     static final String BLA_BLA = "BlaBla";
-    static final String CURRENT_USER = "currentUser";
-    static final String CURRENT_USER_ID = "currentUserId";
+    public static final String CURRENT_USER = "currentUser";
+    public static final String MY_CHAT = "currentChat";
+    public static final String MY_FRIENDS = "myFriends";
+    public static final String CURRENT_USER_ID = "currentUserId";
 
     //region Tables
+    public static final String ROOT = "root";
     public static final String USERS = "Users";
     public static final String USERS_ = "Users/";
     public static final String CHAT = "chat";
@@ -18,7 +21,7 @@ public class Constants {
     static final String FRIENDS_ = "friends/";
     public static final String MESSAGES = "messages";
     public static final String MESSAGES_ = "messages/";
-    static final String NOTIFICATIONS = "notifications";
+    public static final String NOTIFICATIONS = "notifications";
     static final String NOTIFICATIONS_ = "notifications/";
     //endregion
 
@@ -40,4 +43,7 @@ public class Constants {
     public static final String MESSAGE = "message";
     public static final String MESSAGE_IMAGES = "message_images";
     public static final String FROM_USER_ID = "from_user_id";
+
+    public static final String BEFORE_AUTH = "before_auth";
+    public static final String AFTER_AUTH = "after_auth";
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Chatein</string>
     <string name="create_new_account">Create new Account</string>
-    <string name="welcome_to_chatein">Welcome to Chatein</string>
+    <string name="welcome_to_chatein">Welcome to Chatein!</string>
     <string name="full_name">Full Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -64,4 +64,7 @@
     <string name="continue_with_google">Continue with Google</string>
     <string name="web_client_id">717200176700-iuof3d05qtlcn8r8u3kvm1nd68dkb4ms.apps.googleusercontent.com</string>
     <string name="welcome">Welcome!</string>
+    <string name="delete">Delete</string>
+    <string name="un_friend">Unfriend</string>
+    <string name="open_chat">Open chat</string>
 </resources>

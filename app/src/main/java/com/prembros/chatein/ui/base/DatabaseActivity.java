@@ -3,34 +3,32 @@ package com.prembros.chatein.ui.base;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
-import com.prembros.chatein.base.BaseActivity;
+import com.prembros.chatein.base.ChateinApplication;
+import com.prembros.chatein.data.viewmodel.DatabaseViewModel;
 
-import java.util.Objects;
-
-import static com.prembros.chatein.StartActivity.launchStartActivity;
-import static com.prembros.chatein.util.Constants.ONLINE;
-import static com.prembros.chatein.util.Constants.USERS;
+import static com.prembros.chatein.ui.auth.StartActivity.launchStartActivity;
 
 /**
  * Activity that handles online status of the current user.
  */
 public abstract class DatabaseActivity extends BaseActivity {
 
+    protected DatabaseViewModel viewModel;
     protected FirebaseUser currentUser;
-    protected DatabaseReference userDatabase;
+    protected String currentUserId;
+    protected DatabaseReference currentUserRef;
+    protected boolean started;
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            viewModel = DatabaseViewModel.getInstance(ChateinApplication.get(this));
+            currentUser = viewModel.getCurrentUser();
             if (currentUser != null) {
-                userDatabase = FirebaseDatabase.getInstance().getReference().child(USERS)
-                        .child(Objects.requireNonNull(currentUser).getUid());
+                currentUserId = currentUser.getUid();
+                currentUserRef = viewModel.getCurrentUserRef();
             }
             else {
                 launchStartActivity(this);
@@ -39,5 +37,59 @@ public abstract class DatabaseActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override public void onStart() {
+        super.onStart();
+        started = true;
+    }
+
+    @Override protected void onStop() {
+        started = false;
+        super.onStop();
+    }
+
+    public DatabaseReference getUsersRef() {
+        return viewModel.getUsersRef();
+    }
+
+    public DatabaseReference getCurrentUserRef() {
+        return viewModel.getCurrentUserRef();
+    }
+
+    public DatabaseReference getChatRef() {
+        return viewModel.getChatRef();
+    }
+
+    public DatabaseReference getMyChatRef() {
+        return viewModel.getMyChatRef();
+    }
+
+    public DatabaseReference getFriendRequestsRef() {
+        return viewModel.getMyFriendRequestsRef();
+    }
+
+    public DatabaseReference getFriendsRef() {
+        return viewModel.getFriendsRef();
+    }
+
+    public DatabaseReference getMyFriendsRef() {
+        return viewModel.getMyFriendsRef();
+    }
+
+    public DatabaseReference getMyFriendsRef(String friendsUserId) {
+        return viewModel.getMyFriendsRef().child(friendsUserId);
+    }
+
+    public DatabaseReference getMessagesRef() {
+        return viewModel.getMyMessagesRef();
+    }
+
+    public DatabaseReference getMessagesRef(String friendsUserId) {
+        return getMessagesRef().child(friendsUserId);
+    }
+
+    public DatabaseReference getNotificationsRef() {
+        return viewModel.getNotificationRef();
     }
 }

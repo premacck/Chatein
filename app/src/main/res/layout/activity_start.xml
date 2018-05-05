@@ -1,75 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/chat_background"
-    android:orientation="vertical"
-    android:gravity="center_horizontal|bottom"
-    tools:context=".StartActivity">
+    android:id="@+id/root_layout"
+    android:background="@drawable/bg_start"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.auth.StartActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:shadowDx="0"
-        android:shadowDy="20"
-        android:shadowColor="@color/colorShadowTranslucent"
-        android:shadowRadius="40"
-        android:text="@string/welcome"
-        android:textSize="50sp" />
-
-    <Button
-        android:id="@+id/login_btn"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:layout_marginBottom="@dimen/default_margin"
-        android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:textAllCaps="false"
-        android:drawablePadding="-25dp"
-        android:drawableStart="@drawable/ic_login"
-        android:background="@drawable/bg_login_btn"
-        android:foreground="@drawable/ripple_light"
-        android:text="@string/login" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal|bottom">
 
-    <Button
-        android:id="@+id/register_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:layout_marginBottom="@dimen/default_margin"
-        android:padding="8dp"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        android:drawablePadding="-25dp"
-        android:drawableStart="@drawable/ic_person_add"
-        android:background="@drawable/bg_register_btn"
-        android:foreground="@drawable/ripple_light"
-        android:text="@string/create_new_account" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:shadowDx="0"
+            android:shadowDy="20"
+            android:shadowColor="@color/colorShadowTranslucent"
+            android:shadowRadius="40"
+            android:padding="@dimen/default_margin"
+            android:text="@string/welcome_to_chatein"
+            android:textSize="28sp" />
 
-    <Button
-        android:id="@+id/google_sign_in_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:layout_marginBottom="20dp"
-        android:padding="8dp"
-        android:paddingStart="@dimen/default_margin"
-        android:paddingEnd="0dp"
-        android:textAllCaps="false"
-        android:drawablePadding="-34dp"
-        android:drawableStart="@drawable/googleg_standard_color_18"
-        android:background="@drawable/bg_google_btn"
-        android:foreground="@drawable/ripple_dark"
-        android:text="@string/continue_with_google"/>
+        <Button
+            android:id="@+id/login_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/default_margin"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            android:drawablePadding="-25dp"
+            android:drawableStart="@drawable/ic_login"
+            android:background="@drawable/bg_login_btn"
+            android:foreground="@drawable/ripple_light"
+            android:text="@string/login" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/register_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/default_margin"
+            android:padding="8dp"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:drawablePadding="-25dp"
+            android:drawableStart="@drawable/ic_person_add"
+            android:background="@drawable/bg_register_btn"
+            android:foreground="@drawable/ripple_light"
+            android:text="@string/create_new_account" />
+
+        <Button
+            android:id="@+id/google_sign_in_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:layout_marginBottom="20dp"
+            android:padding="8dp"
+            android:paddingStart="@dimen/default_margin"
+            android:paddingEnd="0dp"
+            android:textAllCaps="false"
+            android:drawablePadding="-34dp"
+            android:drawableStart="@drawable/googleg_standard_color_18"
+            android:background="@drawable/bg_google_btn"
+            android:foreground="@drawable/ripple_dark"
+            android:text="@string/continue_with_google"/>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

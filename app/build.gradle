@@ -9,7 +9,6 @@ ext {
     firebaseVersion = "15.0.0"
     firebaseUiVersion = "3.3.1"
     archLifecycleVersion = "1.1.1"
-    archPersistenceVersion = "1.0.0"
     daggerVersion = "2.13"
     butterknifeVersion = "8.8.1"
     kotlin_version = '1.2.41'
@@ -61,6 +60,17 @@ dependencies {
 //    ButterKnife
     implementation "com.jakewharton:butterknife:$butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+
+//   ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:${archLifecycleVersion}"
+    implementation "android.arch.lifecycle:runtime:${archLifecycleVersion}"
+    annotationProcessor "android.arch.lifecycle:compiler:${archLifecycleVersion}"
+
+//   Dagger
+    implementation "com.google.dagger:dagger:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android-support:${daggerVersion}"
+//    annotationProcessor "com.google.dagger:dagger-android-processor:${daggerVersion}"
 
 //    EasyPermission
     implementation 'pub.devrel:easypermissions:0.3.1'

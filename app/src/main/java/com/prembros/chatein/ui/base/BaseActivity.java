@@ -1,12 +1,14 @@
-package com.prembros.chatein.base;
+package com.prembros.chatein.ui.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.prembros.chatein.R;
 
 import butterknife.Unbinder;
 
@@ -33,5 +35,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         } finally {
             super.onDestroy();
         }
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.home) onBackPressed();
+        return super.onOptionsItemSelected(item);
     }
 }

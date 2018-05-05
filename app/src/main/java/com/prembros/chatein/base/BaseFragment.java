@@ -1,6 +1,7 @@
 package com.prembros.chatein.base;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
@@ -10,17 +11,18 @@ import com.bumptech.glide.RequestManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.prembros.chatein.ui.main.MainActivity;
 
 import java.util.Objects;
 
 import butterknife.Unbinder;
 
-import static com.prembros.chatein.StartActivity.launchStartActivity;
+import static com.prembros.chatein.ui.auth.StartActivity.launchStartActivity;
 
 public abstract class BaseFragment extends Fragment {
 
     protected Unbinder unbinder;
-    protected RequestManager glide;
+    public RequestManager glide;
     protected DatabaseReference root;
     protected String currentUserId;
 
@@ -39,6 +41,18 @@ public abstract class BaseFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
+    public String getCurrentUserId() {
+        return currentUserId;
+    }
+
+    @NonNull public MainActivity getParentActivity() throws Exception {
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            return (MainActivity) getActivity();
+        } else throw new IllegalAccessException("Fragment not attached to MainActivity");
+    }
+
+    public abstract void dataAvailable();
 
     protected void setVisibility(View view, int visibility) {
         if (view.getVisibility() != visibility) view.setVisibility(visibility);

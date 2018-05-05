@@ -16,12 +16,9 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.prembros.chatein.R;
-import com.prembros.chatein.base.BaseActivity;
-import com.prembros.chatein.data.model.Friend;
 import com.prembros.chatein.data.model.User;
+import com.prembros.chatein.ui.base.DatabaseActivity;
 import com.prembros.chatein.util.ViewUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -34,17 +31,16 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static android.view.LayoutInflater.from;
-import static com.prembros.chatein.util.Constants.USERS;
 
-public class UsersActivity extends BaseActivity {
+public class UsersListActivity extends DatabaseActivity {
 
-    @BindView(R.id.users_toolbar) Toolbar toolbar;
+    @BindView(R.id.main_toolbar) Toolbar toolbar;
     @BindView(R.id.users_list) RecyclerView recyclerView;
 
     private FirebaseRecyclerAdapter<User, UsersViewHolder> adapter;
 
     public static void launchUsersActivity(@NotNull Context from) {
-        from.startActivity(new Intent(from, UsersActivity.class));
+        from.startActivity(new Intent(from, UsersListActivity.class));
     }
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +49,12 @@ public class UsersActivity extends BaseActivity {
         unbinder = ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("All Users");
+        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.all_users);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        DatabaseReference usersDatabase = FirebaseDatabase.getInstance().getReference().child(USERS);
 
         recyclerView.setHasFixedSize(true);
         FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
-                .setQuery(usersDatabase, User.class)
+                .setQuery(viewModel.getUsersRef(), User.class)
                 .build();
         adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options) {
             @Override protected void onBindViewHolder(@NotNull UsersViewHolder holder, int position, @NonNull User model) {
@@ -70,14 +64,14 @@ public class UsersActivity extends BaseActivity {
             @NonNull @Override public UsersViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
                 return new UsersViewHolder(
                         from(parent.getContext()).inflate(R.layout.item_user_list, parent, false),
-                        glide, UsersActivity.this
+                        glide, UsersListActivity.this
                 );
             }
         };
         recyclerView.setAdapter(adapter);
     }
 
-    @Override protected void onStart() {
+    @Override public void onStart() {
         super.onStart();
         if (adapter != null) adapter.startListening();
     }
@@ -116,10 +110,6 @@ public class UsersActivity extends BaseActivity {
                     .into(dp);
             name.setText(user.getName());
             status.setText(user.getStatus());
-        }
-
-        public void bind(Friend user, String userId) {
-            bind(user.getUser(), userId);
         }
 
         @OnClick(R.id.root_layout) public void openProfile() {

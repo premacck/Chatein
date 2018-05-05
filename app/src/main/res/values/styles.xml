@@ -6,6 +6,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Overlay">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="AppTheme.Overlay.SplashScreenTheme">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
     <style name="AppTheme.MessageEditText">
         <item name="android:minHeight">@dimen/action_bar_height</item>
         <item name="android:maxHeight">100dp</item>

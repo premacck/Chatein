@@ -1,13 +1,17 @@
-package com.prembros.chatein.ui.main;
+package com.prembros.chatein.ui.main.adapter;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-class SectionsPagerAdapter extends FragmentPagerAdapter {
+import com.prembros.chatein.ui.main.ChatsFragment;
+import com.prembros.chatein.ui.main.FriendsFragment;
+import com.prembros.chatein.ui.main.RequestsFragment;
 
-    SectionsPagerAdapter(FragmentManager fm) {
+public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+    public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 

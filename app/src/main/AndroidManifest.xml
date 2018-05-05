@@ -25,33 +25,33 @@
         </service>
         <service android:name=".data.service.UploadService" />
 
-        <activity android:name=".base.SplashScreenActivity" />
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name=".base.SplashScreenActivity"
+            android:theme="@style/AppTheme.Overlay.SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StartActivity" />
+        <activity android:name=".ui.main.MainActivity"/>
+        <activity android:name=".ui.auth.StartActivity"
+            android:theme="@style/AppTheme.Overlay"/>
         <activity
             android:name=".ui.auth.RegisterActivity"
-            android:windowSoftInputMode="adjustResize|stateVisible"
-            android:parentActivityName=".StartActivity" />
+            android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
             android:name=".ui.auth.LoginActivity"
-            android:windowSoftInputMode="adjustResize|stateVisible"
-            android:parentActivityName=".StartActivity" />
+            android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity android:name=".ui.account.AccountSettingsActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name=".ui.social.UsersActivity"
-            android:parentActivityName=".ui.main.MainActivity" />
+            android:name=".ui.social.UsersListActivity" />
         <activity
             android:name=".ui.social.ProfileActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.Overlay">
             <intent-filter>
                 <action android:name="com.prembros.blabla_TARGET_NOTIFICATION" />
 
@@ -59,8 +59,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.chat.ChatActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:parentActivityName=".ui.main.MainActivity"/>
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.social.FriendsListActivity" />
     </application>
 
 </manifest>

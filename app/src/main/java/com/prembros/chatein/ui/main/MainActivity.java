@@ -13,7 +13,9 @@ import android.view.MenuItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ServerValue;
 import com.prembros.chatein.R;
+import com.prembros.chatein.data.viewmodel.DatabaseViewModel;
 import com.prembros.chatein.ui.base.DatabaseActivity;
+import com.prembros.chatein.ui.main.adapter.SectionsPagerAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,9 +24,9 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.prembros.chatein.StartActivity.launchStartActivity;
+import static com.prembros.chatein.ui.auth.StartActivity.launchStartActivity;
 import static com.prembros.chatein.ui.account.AccountSettingsActivity.launchAccountSettingsActivity;
-import static com.prembros.chatein.ui.social.UsersActivity.launchUsersActivity;
+import static com.prembros.chatein.ui.social.UsersListActivity.launchUsersActivity;
 import static com.prembros.chatein.util.CommonUtils.saveUserLocally;
 import static com.prembros.chatein.util.Constants.ONLINE;
 import static com.prembros.chatein.util.SharedPrefs.removeSavedUser;
@@ -59,18 +61,22 @@ public class MainActivity extends DatabaseActivity {
         }
     }
 
-    @Override protected void onStart() {
+    @Override public void onStart() {
         super.onStart();
         if (currentUser != null) {
-            userDatabase.child(ONLINE).setValue("true");
+            currentUserRef.child(ONLINE).setValue("true");
         }
+    }
+
+    @Override public void onDetachedFromWindow() {
+        if (currentUser != null && currentUserRef != null) {
+            currentUserRef.child(ONLINE).setValue(ServerValue.TIMESTAMP);
+        }
+        super.onDetachedFromWindow();
     }
 
     @Override protected void onDestroy() {
         super.onDestroy();
-        if (currentUser != null && userDatabase != null) {
-            userDatabase.child(ONLINE).setValue(ServerValue.TIMESTAMP);
-        }
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,6 +88,7 @@ public class MainActivity extends DatabaseActivity {
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_logout:
+                DatabaseViewModel.destroyInstance();
                 FirebaseAuth.getInstance().signOut();
                 removeSavedUser(this);
                 launchStartActivity(this);
