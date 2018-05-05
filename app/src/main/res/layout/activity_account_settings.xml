@@ -69,6 +69,7 @@
         android:layout_below="@+id/dp_layout"
         android:layout_marginTop="40dp"
         android:padding="16dp"
+        android:gravity="center_vertical"
         android:textStyle="bold"
         android:layout_centerHorizontal="true"
         android:textColor="@android:color/white"
@@ -76,15 +77,31 @@
 
     <TextView
         android:id="@+id/status"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
         android:gravity="center_vertical"
         android:drawableEnd="@drawable/ic_edit"
-        android:drawablePadding="10dp"
         android:hint="@string/your_status_is_empty"
         android:padding="16dp"
         android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/friend_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/status"
+        android:gravity="center_vertical"
+        android:layout_centerHorizontal="true"
+        android:hint="@string/no_friends"
+        android:textAllCaps="false"
+        android:textColorHint="@color/material_grey300"
+        android:textSize="20sp"
+        android:padding="@dimen/default_margin"
+        android:drawableEnd="@drawable/ic_people"
+        android:drawablePadding="10dp"
+        android:textColor="@android:color/white"
+        style="?android:attr/borderlessButtonStyle" />
 
 </RelativeLayout>

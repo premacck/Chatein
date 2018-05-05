@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
 import com.prembros.chatein.base.ChateinApplication;
 import com.prembros.chatein.data.viewmodel.DatabaseViewModel;
 
@@ -49,6 +50,10 @@ public abstract class DatabaseActivity extends BaseActivity {
         super.onStop();
     }
 
+    public DatabaseReference getRootRef() {
+        return viewModel.getRootRef();
+    }
+
     public DatabaseReference getUsersRef() {
         return viewModel.getUsersRef();
     }
@@ -65,7 +70,11 @@ public abstract class DatabaseActivity extends BaseActivity {
         return viewModel.getMyChatRef();
     }
 
-    public DatabaseReference getFriendRequestsRef() {
+    public DatabaseReference getChatRef(String friendsUserId) {
+        return viewModel.getMyChatRef().child(friendsUserId);
+    }
+
+    public DatabaseReference getMyFriendRequestsRef() {
         return viewModel.getMyFriendRequestsRef();
     }
 
@@ -81,15 +90,23 @@ public abstract class DatabaseActivity extends BaseActivity {
         return viewModel.getMyFriendsRef().child(friendsUserId);
     }
 
-    public DatabaseReference getMessagesRef() {
+    public DatabaseReference getMyMessagesRef() {
         return viewModel.getMyMessagesRef();
     }
 
     public DatabaseReference getMessagesRef(String friendsUserId) {
-        return getMessagesRef().child(friendsUserId);
+        return getMyMessagesRef().child(friendsUserId);
     }
 
     public DatabaseReference getNotificationsRef() {
         return viewModel.getNotificationRef();
+    }
+
+    public StorageReference getProfileImagesRef() {
+        return viewModel.getProfileImagesRef();
+    }
+
+    public StorageReference getThumbImagesRef() {
+        return viewModel.getThumbImagesRef();
     }
 }

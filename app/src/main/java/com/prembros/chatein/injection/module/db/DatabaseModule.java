@@ -54,7 +54,7 @@ public class DatabaseModule {
      * @return All Chat references for updating in "seen" field.
      */
     @Provides @DbScope @Named(CHAT)
-    public DatabaseReference provideChatRef(@Named(ROOT) DatabaseReference reference, @Named(CURRENT_USER_ID) String userId) {
+    public DatabaseReference provideChatRef(@Named(ROOT) DatabaseReference reference) {
         return reference.child(CHAT);
     }
 

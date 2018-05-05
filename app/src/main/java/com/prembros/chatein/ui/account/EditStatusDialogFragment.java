@@ -11,9 +11,6 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.prembros.chatein.R;
 import com.prembros.chatein.base.BaseDialogFragment;
 
@@ -25,7 +22,6 @@ import butterknife.OnClick;
 
 import static com.prembros.chatein.util.CommonUtils.showErrorToast;
 import static com.prembros.chatein.util.Constants.DEFAULT;
-import static com.prembros.chatein.util.Constants.USERS;
 import static com.prembros.chatein.util.ViewUtils.disableView;
 import static com.prembros.chatein.util.ViewUtils.enableView;
 import static com.prembros.chatein.util.ViewUtils.hideKeyboard;
@@ -39,8 +35,11 @@ public class EditStatusDialogFragment extends BaseDialogFragment {
     @BindView(R.id.new_status) TextInputLayout newStatus;
     @BindView(R.id.progress_bar) ProgressBar progressBar;
 
-    private DatabaseReference reference;
     private String oldStatus;
+
+    private AccountSettingsActivity getParentActivity() {
+        return (AccountSettingsActivity) getActivity();
+    }
 
     @NonNull public static EditStatusDialogFragment newInstance(String status) {
         EditStatusDialogFragment fragment = new EditStatusDialogFragment();
@@ -64,8 +63,6 @@ public class EditStatusDialogFragment extends BaseDialogFragment {
             Objects.requireNonNull(newStatus.getEditText()).setText(oldStatus);
             newStatus.getEditText().requestFocus();
             showKeyboard(getActivity());
-            String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-            reference = FirebaseDatabase.getInstance().getReference().child(USERS).child(userId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +75,7 @@ public class EditStatusDialogFragment extends BaseDialogFragment {
             progressBar.setVisibility(View.VISIBLE);
             String status = Objects.requireNonNull(newStatus.getEditText()).getText().toString();
             if (status.isEmpty()) status = DEFAULT;
-            reference.child("status").setValue(status).addOnCompleteListener(new OnCompleteListener<Void>() {
+            getParentActivity().getCurrentUserRef().child("status").setValue(status).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override public void onComplete(@NonNull Task<Void> task) {
                     enableView(newStatus);
                     progressBar.setVisibility(View.GONE);

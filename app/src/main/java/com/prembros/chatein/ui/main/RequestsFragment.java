@@ -50,7 +50,7 @@ public class RequestsFragment extends BaseFragment {
             recyclerView.setHasFixedSize(true);
 
             FirebaseRecyclerOptions<Request> options = new FirebaseRecyclerOptions.Builder<Request>()
-                    .setQuery(getParentActivity().getFriendRequestsRef(), Request.class)
+                    .setQuery(getParentActivity().getMyFriendRequestsRef(), Request.class)
                     .build();
 
             adapter = new MainRequestsAdapter(options, this, currentUserId);

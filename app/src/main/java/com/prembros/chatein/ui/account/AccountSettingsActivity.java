@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
+import static com.prembros.chatein.ui.social.FriendsListActivity.launchFriendsActivity;
 import static com.prembros.chatein.util.CommonUtils.makeSnackBar;
 import static com.prembros.chatein.util.Constants.DEFAULT;
 import static com.prembros.chatein.util.ViewUtils.compressImage;
@@ -52,6 +54,10 @@ public class AccountSettingsActivity extends DatabaseActivity {
     @BindView(R.id.name) TextView name;
     @BindView(R.id.status) TextView status;
     @BindView(R.id.progress_bar) CircularProgressBar progressBar;
+    @BindView(R.id.friend_count) Button friendCount;
+
+    private CustomValueEventListener userInfoListener;
+    private CustomValueEventListener friendCountListener;
 
     public static void launchAccountSettingsActivity(@NotNull Context from) {
         from.startActivity(new Intent(from, AccountSettingsActivity.class));
@@ -65,10 +71,16 @@ public class AccountSettingsActivity extends DatabaseActivity {
         if (currentUser != null) updateUI();
     }
 
+    @Override protected void onDestroy() {
+        currentUserRef.removeEventListener(userInfoListener);
+        getMyFriendsRef().removeEventListener(friendCountListener);
+        super.onDestroy();
+    }
+
     private void updateUI() {
         try {
             if (currentUser != null) {
-                currentUserRef.addValueEventListener(new CustomValueEventListener() {
+                userInfoListener = new CustomValueEventListener() {
                     @Override public void onDataChange(DataSnapshot dataSnapshot) {
                         if (started) {
                             progressBar.setVisibility(View.VISIBLE);
@@ -102,7 +114,17 @@ public class AccountSettingsActivity extends DatabaseActivity {
                             status.setVisibility(View.VISIBLE);
                         }
                     }
-                });
+                };
+                currentUserRef.addValueEventListener(userInfoListener);
+
+                friendCountListener = new CustomValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String friendCountText = dataSnapshot.getChildrenCount() + " friends";
+                        friendCount.setText(friendCountText);
+                    }
+                };
+                getMyFriendsRef().addValueEventListener(friendCountListener);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,6 +137,10 @@ public class AccountSettingsActivity extends DatabaseActivity {
 
     @OnClick(R.id.status) public void editStatus() {
         EditStatusDialogFragment.newInstance(status.getText().toString()).show(getSupportFragmentManager(), EditStatusDialogFragment.TAG);
+    }
+
+    @OnClick(R.id.friend_count) public void viewFriendsOfUser() {
+        launchFriendsActivity(this, currentUserId);
     }
 
     @OnClick(R.id.dp) public void editProfilePic1() {
@@ -151,7 +177,7 @@ public class AccountSettingsActivity extends DatabaseActivity {
                     final byte[] thumbByteData = compressImage(this, resultUri);
 
 //                    Database paths of original image
-                    StorageReference imagePath = viewModel.getProfileImagesRef().child(currentUserId + ".jpg");
+                    StorageReference imagePath = getProfileImagesRef().child(currentUserId + ".jpg");
 
 //                    First upload the original image
                     imagePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -177,7 +203,7 @@ public class AccountSettingsActivity extends DatabaseActivity {
 
     private void uploadThumbnailAndUpdateDatabase(byte[] thumbByteData, final String imageUrl) {
 //        Database paths of original image
-        StorageReference thumbPath = viewModel.getThumbImagesRef().child(currentUserId + ".jpg");
+        StorageReference thumbPath = getThumbImagesRef().child(currentUserId + ".jpg");
 //        Uploading thumbnail
         thumbPath.putBytes(thumbByteData).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {

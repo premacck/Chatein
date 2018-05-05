@@ -62,29 +62,7 @@ public class FriendsListActivity extends DatabaseActivity {
             Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.friends);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            recyclerView.setHasFixedSize(true);
-            FirebaseRecyclerOptions<Friend> options = new FirebaseRecyclerOptions.Builder<Friend>()
-                    .setQuery(viewModel.getFriendsRef().child(friendUserId), Friend.class)
-                    .build();
-            adapter = new FirebaseRecyclerAdapter<Friend, FriendsViewHolder>(options) {
-                @Override protected void onBindViewHolder(@NotNull final FriendsViewHolder holder, int position, @NonNull final Friend model) {
-                    final String userId = getRef(position).getKey();
-                    getUsersRef().child(userId).addValueEventListener(new CustomValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            holder.bind(new User(dataSnapshot), userId);
-                        }
-                    });
-                }
-
-                @NonNull @Override public FriendsViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
-                    return new FriendsViewHolder(
-                            from(parent.getContext()).inflate(R.layout.item_user_list, parent, false),
-                            glide, FriendsListActivity.this
-                    );
-                }
-            };
-            recyclerView.setAdapter(adapter);
+            initializeFriendsList();
         }
     }
 
@@ -101,6 +79,34 @@ public class FriendsListActivity extends DatabaseActivity {
     @Override protected void onDestroy() {
         if (adapter != null) adapter = null;
         super.onDestroy();
+    }
+
+    private void initializeFriendsList() {
+        recyclerView.setHasFixedSize(true);
+
+        FirebaseRecyclerOptions<Friend> options = new FirebaseRecyclerOptions.Builder<Friend>()
+                .setQuery(getFriendsRef().child(friendUserId), Friend.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Friend, FriendsViewHolder>(options) {
+            @Override protected void onBindViewHolder(@NotNull final FriendsViewHolder holder, int position, @NonNull final Friend model) {
+                final String userId = getRef(position).getKey();
+                getUsersRef().child(userId).addValueEventListener(new CustomValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        holder.bind(new User(dataSnapshot), userId);
+                    }
+                });
+            }
+
+            @NonNull @Override public FriendsViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
+                return new FriendsViewHolder(
+                        from(parent.getContext()).inflate(R.layout.item_user_list, parent, false),
+                        glide, FriendsListActivity.this
+                );
+            }
+        };
+        recyclerView.setAdapter(adapter);
     }
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {

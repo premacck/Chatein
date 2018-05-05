@@ -52,23 +52,7 @@ public class UsersListActivity extends DatabaseActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.all_users);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        recyclerView.setHasFixedSize(true);
-        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
-                .setQuery(viewModel.getUsersRef(), User.class)
-                .build();
-        adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options) {
-            @Override protected void onBindViewHolder(@NotNull UsersViewHolder holder, int position, @NonNull User model) {
-                holder.bind(model, getRef(position).getKey());
-            }
-
-            @NonNull @Override public UsersViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
-                return new UsersViewHolder(
-                        from(parent.getContext()).inflate(R.layout.item_user_list, parent, false),
-                        glide, UsersListActivity.this
-                );
-            }
-        };
-        recyclerView.setAdapter(adapter);
+        initializeAllUsersList();
     }
 
     @Override public void onStart() {
@@ -84,6 +68,28 @@ public class UsersListActivity extends DatabaseActivity {
     @Override protected void onDestroy() {
         if (adapter != null) adapter = null;
         super.onDestroy();
+    }
+
+    private void initializeAllUsersList() {
+        recyclerView.setHasFixedSize(true);
+
+        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
+                .setQuery(getUsersRef(), User.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<User, UsersViewHolder>(options) {
+            @Override protected void onBindViewHolder(@NotNull UsersViewHolder holder, int position, @NonNull User model) {
+                holder.bind(model, getRef(position).getKey());
+            }
+
+            @NonNull @Override public UsersViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
+                return new UsersViewHolder(
+                        from(parent.getContext()).inflate(R.layout.item_user_list, parent, false),
+                        glide, UsersListActivity.this
+                );
+            }
+        };
+        recyclerView.setAdapter(adapter);
     }
 
     public static class UsersViewHolder extends RecyclerView.ViewHolder {

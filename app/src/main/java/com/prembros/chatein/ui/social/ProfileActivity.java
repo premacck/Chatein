@@ -67,6 +67,9 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
     @SocialState private int currentState;
     private String friendUserId;
     private SocialUtils socialUtils;
+    private CustomValueEventListener userInfoListener;
+    private CustomValueEventListener friendCountListener;
+    private ValueEventListener actionButtonStateListener;
 
     public static void launchProfileActivity(@NotNull Context from, String userId) {
         Intent intent = new Intent(from, ProfileActivity.class);
@@ -93,9 +96,16 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
         updateUI();
     }
 
+    @Override protected void onDestroy() {
+        getUsersRef().child(friendUserId).removeEventListener(userInfoListener);
+        getFriendsRef().child(friendUserId).removeEventListener(friendCountListener);
+        getMyFriendRequestsRef().removeEventListener(actionButtonStateListener);
+        super.onDestroy();
+    }
+
     private void updateUI() {
         try {
-            viewModel.getUsersRef().child(friendUserId).addValueEventListener(new CustomValueEventListener() {
+            userInfoListener = new CustomValueEventListener() {
                 @Override public void onDataChange(DataSnapshot dataSnapshot) {
                     if (started && dataSnapshot != null && dp != null && name != null && status != null) {
                         User user = new User(dataSnapshot);
@@ -126,14 +136,18 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
                         updateActionButton();
                     }
                 }
-            });
-            viewModel.getFriendsRef().child(friendUserId).addListenerForSingleValueEvent(new CustomValueEventListener() {
+            };
+            getUsersRef().child(friendUserId).addValueEventListener(userInfoListener);
+
+            friendCountListener = new CustomValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String friendCountText = dataSnapshot.getChildrenCount() + " friends";
                     friendCount.setText(friendCountText);
+                    getFriendsRef().child(friendUserId).removeEventListener(this);
                 }
-            });
+            };
+            getFriendsRef().child(friendUserId).addValueEventListener(friendCountListener);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -141,7 +155,7 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
 
     private void updateActionButton() {
         try {
-            viewModel.getMyFriendRequestsRef().addListenerForSingleValueEvent(new ValueEventListener() {
+            actionButtonStateListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (started) {
@@ -150,18 +164,18 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
                             String requestType = requireNonNull(dataSnapshot
                                     .child(friendUserId).child(REQUEST_TYPE).getValue()).toString();
                             if (Objects.equals(requestType, Annotations.RequestType.RECEIVED)) {
-    //                            We have recieved a request from the friend
+                                //                            We have recieved a request from the friend
                                 updateState(REQUEST_RECEIVED);
                             } else if (Objects.equals(requestType, Annotations.RequestType.SENT)){
-    //                            We have sent a request to the friend
+                                //                            We have sent a request to the friend
                                 updateState(REQUEST_SENT);
                             }
                         } else {
-    //                        Check if we are already friends or not
-                            viewModel.getMyFriendsRef().addListenerForSingleValueEvent(new CustomValueEventListener() {
+                            //                        Check if we are already friends or not
+                            getMyFriendsRef().addListenerForSingleValueEvent(new CustomValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-    //                                check if friend if there in out friends list
+                                    //                                check if friend if there in out friends list
                                     updateState(dataSnapshot.hasChild(friendUserId) ? ARE_FRIENDS : NOT_FRIENDS);
                                 }
                             });
@@ -172,7 +186,8 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
                 @Override public void onCancelled(DatabaseError databaseError) {
                     progressBar.setVisibility(View.GONE);
                 }
-            });
+            };
+            getMyFriendRequestsRef().addListenerForSingleValueEvent(actionButtonStateListener);
         } catch (Exception e) {
             e.printStackTrace();
         }

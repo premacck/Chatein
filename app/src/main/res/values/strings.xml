@@ -26,7 +26,7 @@
     <string name="failed_to_upload_photo">Failed to upload photo, please try again</string>
     <string name="failed_to_compress_image">Failed to compress image</string>
     <string name="no_status">No status</string>
-    <string name="no_friends">No Friends</string>
+    <string name="no_friends">No Friends yet</string>
     <string name="failed_to_send_request">Failed to send friend request. please try again</string>
     <string name="friend_request_sent">Friend request sent!</string>
     <string name="add_friend">Add friend</string>
