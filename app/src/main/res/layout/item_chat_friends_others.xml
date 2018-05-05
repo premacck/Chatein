@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/root_layout"
-    android:tag="@id/tag_holder"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:tag="@id/tag_holder">
 
     <LinearLayout
         style="@style/AppTheme.FriendsMessageLayout"
@@ -43,14 +42,13 @@
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/image_message" />
 
-            <fr.castorflex.android.circularprogressbar.CircularProgressBar
+            <ProgressBar
                 android:id="@+id/image_progress"
                 android:layout_width="@dimen/action_bar_height"
                 android:layout_height="@dimen/action_bar_height"
                 android:indeterminate="true"
                 android:layout_gravity="center"
-                app:cpb_color="@android:color/white"
-                app:cpb_stroke_width="4dp"/>
+                style="@style/AppTheme.WhiteAccent"/>
 
         </FrameLayout>
 

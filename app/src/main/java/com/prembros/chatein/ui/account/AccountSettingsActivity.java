@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
@@ -38,7 +39,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
 import static com.prembros.chatein.ui.social.FriendsListActivity.launchFriendsActivity;
 import static com.prembros.chatein.util.CommonUtils.makeSnackBar;
@@ -53,7 +53,7 @@ public class AccountSettingsActivity extends DatabaseActivity {
     @BindView(R.id.edit_dp) ImageButton editDp;
     @BindView(R.id.name) TextView name;
     @BindView(R.id.status) TextView status;
-    @BindView(R.id.progress_bar) CircularProgressBar progressBar;
+    @BindView(R.id.progress_bar) ProgressBar progressBar;
     @BindView(R.id.friend_count) Button friendCount;
 
     private CustomValueEventListener userInfoListener;

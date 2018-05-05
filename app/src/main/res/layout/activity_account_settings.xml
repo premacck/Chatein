@@ -26,6 +26,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="60dp">
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:indeterminate="true"
+            android:layout_centerInParent="true"
+            style="@style/AppTheme.WhiteAccent"/>
+
         <ImageView
             android:id="@+id/dp"
             android:layout_width="200dp"
@@ -33,19 +41,6 @@
             android:src="@drawable/ic_add_user"
             android:layout_centerInParent="true"
             android:contentDescription="@string/dp" />
-
-        <fr.castorflex.android.circularprogressbar.CircularProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:indeterminate="true"
-            app:cpb_stroke_width="4dp"
-            app:cpb_color="@android:color/white"
-            app:cpb_rotation_speed="1.0"
-            app:cpb_sweep_speed="1.0"
-            app:cpb_min_sweep_angle="10"
-            app:cpb_max_sweep_angle="300"
-            android:layout_centerInParent="true" />
 
         <ImageButton
             android:id="@+id/edit_dp"

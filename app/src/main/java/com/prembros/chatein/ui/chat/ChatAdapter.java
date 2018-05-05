@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
@@ -28,7 +29,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
@@ -133,7 +133,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         @BindView(R.id.chat_image) ImageView chatImageView;
         @BindView(R.id.chat) TextView chatView;
         @BindView(R.id.time) TextView timeView;
-        @BindView(R.id.image_progress) CircularProgressBar progressBar;
+        @BindView(R.id.image_progress) ProgressBar progressBar;
 
         MessageViewHolder(View itemView, ViewImageListener listener) {
             super(itemView);
