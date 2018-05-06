@@ -137,6 +137,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     public static void launchChatActivity(@NotNull Context from, String userId) {
         Intent intent = new Intent(from, ChatActivity.class);
         intent.putExtra(USER_ID, userId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         from.startActivity(intent);
     }
 
