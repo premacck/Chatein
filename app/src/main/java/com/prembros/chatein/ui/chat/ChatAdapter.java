@@ -38,6 +38,7 @@ import com.google.firebase.storage.StorageReference;
 import com.prembros.chatein.R;
 import com.prembros.chatein.data.model.Chat;
 import com.prembros.chatein.data.model.UpdateRequest;
+import com.prembros.chatein.util.FileUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -300,7 +301,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
             try {
                 textMessageLayout.setVisibility(View.VISIBLE);
                 imageMessageLayout.setVisibility(View.GONE);
-                chatView.setText(chat.getMessage());
+                chatView.setText(
+                        Objects.equals(chat.getType(), TEXT) ?
+                                chat.getMessage() :
+                                FileUtil.getExtension(chat.getMessage()) + " File"
+                );
                 timeView.setText(getTime(requireNonNull(chat.getTime_stamp())));
                 maybeSetSeen();
             } catch (Exception e) {

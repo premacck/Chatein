@@ -32,6 +32,7 @@ import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.ui.base.SelectableFirebaseAdapter;
 import com.prembros.chatein.ui.main.ChatsFragment;
 import com.prembros.chatein.util.Annotations;
+import com.prembros.chatein.util.FileUtil;
 import com.prembros.chatein.util.ViewUtils;
 import com.prembros.chatein.util.database.ChatEventListener;
 import com.prembros.chatein.util.database.CustomValueEventListener;
@@ -48,6 +49,7 @@ import butterknife.OnLongClick;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.prembros.chatein.ui.chat.ChatActivity.launchChatActivity;
+import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
 import static com.prembros.chatein.util.Constants.CHAT_;
 import static com.prembros.chatein.util.Constants.MESSAGE;
 import static com.prembros.chatein.util.Constants.MESSAGES_;
@@ -215,9 +217,15 @@ public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainCh
 
         public void setMessage(String data, String type, LastChat lastChat) {
             try {
-                status.setText(Objects.equals(type, Annotations.ChatType.TEXT) ? data : "Image");
+                status.setText(
+                        Objects.equals(type, Annotations.ChatType.IMAGE) ?
+                                "Image" :
+                                Objects.equals(type, TEXT) ?
+                                        data :
+                                        FileUtil.getExtension(data) + " File"
+                );
                 status.setCompoundDrawablesWithIntrinsicBounds(
-                        Objects.equals(type, Annotations.ChatType.TEXT) ? 0 : R.drawable.ic_image, 0, 0, 0);
+                        Objects.equals(type, Annotations.ChatType.IMAGE) ? R.drawable.ic_image : 0, 0, 0, 0);
                 status.setTypeface(status.getTypeface(), lastChat.getSeen() ? Typeface.NORMAL : Typeface.BOLD);
                 status.setTextColor(Color.parseColor(lastChat.getSeen() ? "#9e9e9e" : "#333333"));
 
