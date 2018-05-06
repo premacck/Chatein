@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:id="@+id/root_layout"
     android:background="@android:color/white"
+    android:foreground="@drawable/ripple_dark"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -19,6 +20,18 @@
             android:layout_margin="@dimen/default_margin"
             android:src="@drawable/ic_add_user_small"
             android:layout_centerVertical="true"
+            android:contentDescription="@string/dp" />
+
+        <ImageView
+            android:id="@+id/selected_tick"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_check_circle"
+            android:layout_marginEnd="-2dp"
+            android:layout_marginBottom="-2dp"
+            android:layout_alignBottom="@+id/dp"
+            android:layout_alignEnd="@+id/dp"
+            android:visibility="visible"
             android:contentDescription="@string/dp" />
 
         <ImageView

@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/root_layout"
-    android:tag="@id/tag_holder"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:foreground="@drawable/ripple_dark"
+    android:tag="@id/tag_holder">
 
     <ImageView
         android:layout_width="18dp"
@@ -12,7 +12,8 @@
         android:src="@drawable/ic_chat_self_pointer"
         android:scaleType="fitXY"
         android:layout_marginEnd="8dp"
-        android:layout_gravity="bottom|end"
+        android:layout_marginTop="@dimen/chat_margin"
+        android:layout_gravity="top|end"
         android:contentDescription="@string/first_chat_pointer" />
 
     <LinearLayout
@@ -32,7 +33,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="100dp"
-                style="@style/AppTheme.SelectableTextView"
                 android:textColor="@android:color/white"/>
 
         </FrameLayout>

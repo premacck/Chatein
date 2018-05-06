@@ -1,43 +1,35 @@
 package com.prembros.chatein.ui.main.adapter;
 
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.prembros.chatein.R;
 import com.prembros.chatein.base.BaseFragment;
 import com.prembros.chatein.data.model.User;
-import com.prembros.chatein.ui.base.SelectableFirebaseAdapter;
-import com.prembros.chatein.util.CustomValueEventListener;
 import com.prembros.chatein.util.ViewUtils;
+import com.prembros.chatein.util.database.CustomValueEventListener;
 
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnLongClick;
 
 import static com.prembros.chatein.ui.chat.ChatActivity.launchChatActivity;
 import static com.prembros.chatein.util.Constants.ONLINE;
 import static com.prembros.chatein.util.ViewUtils.loadProfilePic;
 
-public class MainFriendsAdapter extends SelectableFirebaseAdapter<User, MainFriendsAdapter.FriendsViewHolder> {
+public class MainFriendsAdapter extends FirebaseRecyclerAdapter<User, MainFriendsAdapter.FriendsViewHolder> {
 
     private final BaseFragment fragment;
 
@@ -86,47 +78,6 @@ public class MainFriendsAdapter extends SelectableFirebaseAdapter<User, MainFrie
                 this);
     }
 
-    @Override public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        multiSelect = true;
-        menu.add(0, R.id.action_un_friend, 0, R.string.un_friend);
-        return true;
-    }
-
-    @Override public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        try {
-            String suffix = selectedItems.size() <=1 ? " this person?\n" : " selected people?\n";
-            new AlertDialog.Builder(fragment.getParentActivity())
-                    .setTitle("Alert")
-                    .setMessage("Are you sure you want to unfriend" + suffix + "This cannot be undone.")
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            for (int index : selectedItems) {
-                                try {
-                                    fragment.getParentActivity()
-                                            .getMyFriendsRef(getRef(index).getKey())
-                                            .removeValue();
-                                    getRef(index).removeValue();
-                                    notifyItemRemoved(index);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    })
-                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.root_layout) LinearLayout layout;
@@ -164,24 +115,6 @@ public class MainFriendsAdapter extends SelectableFirebaseAdapter<User, MainFrie
                 ViewUtils.openProfile(adapter.fragment.getParentActivity(), userId);
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-        }
-
-        @OnLongClick(R.id.root_layout) public boolean itemSelected(View view) {
-            ((AppCompatActivity)view.getContext()).startSupportActionMode(adapter);
-            selectItem(getAdapterPosition());
-            return true;
-        }
-
-        private void selectItem(int position) {
-            if (adapter.multiSelect) {
-                if (adapter.selectedItems.contains(position)) {
-                    adapter.selectedItems.remove(position);
-                    layout.setBackgroundColor(Color.WHITE);
-                } else {
-                    adapter.selectedItems.add(position);
-                    layout.setBackgroundColor(Color.LTGRAY);
-                }
             }
         }
     }

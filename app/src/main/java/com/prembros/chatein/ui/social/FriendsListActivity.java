@@ -21,13 +21,12 @@ import com.prembros.chatein.R;
 import com.prembros.chatein.data.model.Friend;
 import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.ui.base.DatabaseActivity;
-import com.prembros.chatein.util.CustomValueEventListener;
 import com.prembros.chatein.util.ViewUtils;
+import com.prembros.chatein.util.database.CustomValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,9 +57,7 @@ public class FriendsListActivity extends DatabaseActivity {
         if (getIntent() != null) friendUserId = getIntent().getStringExtra(USER_ID);
 
         if (friendUserId != null) {
-            setSupportActionBar(toolbar);
-            Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.friends);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            setupToolbar(toolbar, R.string.friends);
 
             initializeFriendsList();
         }
@@ -72,7 +69,7 @@ public class FriendsListActivity extends DatabaseActivity {
     }
 
     @Override protected void onStop() {
-        if (friendUserId != null && adapter != null) adapter.stopListening();
+        if (adapter != null) adapter.stopListening();
         super.onStop();
     }
 

@@ -6,6 +6,7 @@ import android.support.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import static com.prembros.chatein.util.Annotations.ChatType.FILE;
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
 import static com.prembros.chatein.util.Annotations.NotificationType.ACCEPT;
@@ -39,10 +40,11 @@ public class Annotations {
     }
 
     @Retention(RetentionPolicy.CLASS)
-    @StringDef({TEXT, IMAGE})
+    @StringDef({TEXT, IMAGE, FILE})
     public @interface ChatType {
         String TEXT = "text";
         String IMAGE = "image";
+        String FILE = "file";
     }
 
     @Retention(RetentionPolicy.CLASS)

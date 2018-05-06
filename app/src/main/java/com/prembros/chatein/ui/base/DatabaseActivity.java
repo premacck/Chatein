@@ -50,6 +50,10 @@ public abstract class DatabaseActivity extends BaseActivity {
         super.onStop();
     }
 
+    public String getCurrentUserId() {
+        return currentUserId;
+    }
+
     public DatabaseReference getRootRef() {
         return viewModel.getRootRef();
     }

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,16 +21,20 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.prembros.chatein.data.model.UpdateRequest;
 import com.prembros.chatein.util.Annotations;
+import com.prembros.chatein.util.Annotations.ChatType;
+import com.prembros.chatein.util.FileUtil;
 import com.prembros.chatein.util.UploadNotification;
 
 import java.util.Map;
 import java.util.Objects;
 
+import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.CommonUtils.showToast;
 import static com.prembros.chatein.util.Constants.CHAT;
 import static com.prembros.chatein.util.Constants.FROM;
 import static com.prembros.chatein.util.Constants.MESSAGE;
 import static com.prembros.chatein.util.Constants.MESSAGES_;
+import static com.prembros.chatein.util.Constants.MESSAGE_FILES;
 import static com.prembros.chatein.util.Constants.MESSAGE_IMAGES;
 import static com.prembros.chatein.util.Constants.SEEN;
 import static com.prembros.chatein.util.Constants.TIME_STAMP;
@@ -45,24 +48,25 @@ import static com.prembros.chatein.util.Constants.TYPE;
 public class UploadService extends IntentService implements UploadCallbacks {
 
     private static final String VIDEO_UPLOAD_RECEIVER = "videoUploadReceiver";
-    public static final String DOWNLOAD_URL = "downloadUrl";
-    public static final String UPLOAD_URL = "uploadUrl";
-    private static final String PUSH_ID = "pushId";
     private static final String CURRENT_USER_ID = "currentUserId";
     private static final String FRIEND_USER_ID = "friendUserId";
+    public static final String DOWNLOAD_URL = "downloadUrl";
+    public static final String UPLOAD_URL = "uploadUrl";
+    private static final String CHAT_TYPE = "chatType";
+    private static final String PUSH_ID = "pushId";
 
     private Bundle bundle;
     private ResultReceiver receiver;
 
-    public static void launchUploadService(Context context, String pushId, Uri filePath, String personName,
+    public static void launchUploadService(Context context, String pushId, Uri filePath, String personName, @ChatType String chatType,
                                            String currentUserId, String friendUserId, VideoUploadReceiver videoUploadReceiver) {
         Intent intent = new Intent(context, UploadService.class);
         intent.putExtra(PUSH_ID, pushId);
         intent.putExtra(UPLOAD_URL, filePath);
         intent.putExtra(FROM, personName);
+        intent.putExtra(CHAT_TYPE, chatType);
         intent.putExtra(CURRENT_USER_ID, currentUserId);
         intent.putExtra(FRIEND_USER_ID, friendUserId);
-        intent.putExtra(FROM, personName);
         intent.putExtra(VIDEO_UPLOAD_RECEIVER, videoUploadReceiver);
         context.startService(intent);
     }
@@ -82,21 +86,20 @@ public class UploadService extends IntentService implements UploadCallbacks {
             final String pushId = intent.getStringExtra(PUSH_ID);
             Uri filePath = intent.getParcelableExtra(UPLOAD_URL);
             String personName = intent.getStringExtra(FROM);
+            @ChatType final String chatType = intent.getStringExtra(CHAT_TYPE);
             final String currentUserId = intent.getStringExtra(CURRENT_USER_ID);
             final String friendUserId = intent.getStringExtra(FRIEND_USER_ID);
             try {
                 UploadNotification.begin(this, personName, friendUserId);
 
                 StorageReference fileReference = FirebaseStorage.getInstance().getReference()
-                        .child(MESSAGE_IMAGES).child(pushId + ".jpg");
+                        .child(Objects.equals(chatType, IMAGE) ? MESSAGE_IMAGES : MESSAGE_FILES)
+                        .child(currentUserId).child(friendUserId).child(pushId + FileUtil.getExtension(filePath.toString()));
 
                 fileReference.putFile(filePath).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                         int percent = (int) ((100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount());
-                        Log.d("***TOTAL BYTES***", String.valueOf(taskSnapshot.getTotalByteCount()));
-                        Log.d("***BYTES TRANSFERRED***", String.valueOf(taskSnapshot.getBytesTransferred()));
-                        Log.d("***UPLOAD PERCENT***", String.valueOf(percent));
                         onProgressUpdate(percent);
                     }
                 }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -104,11 +107,12 @@ public class UploadService extends IntentService implements UploadCallbacks {
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
                             DatabaseReference root = FirebaseDatabase.getInstance().getReference();
+                            @SuppressWarnings("deprecation")
                             final String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl()).toString();
                             Map messageMap = UpdateRequest.forMapOnly()
                                     .put(MESSAGE, downloadUrl)
                                     .put(SEEN, false)
-                                    .put(TYPE, Annotations.ChatType.IMAGE)
+                                    .put(TYPE, chatType)
                                     .put(TIME_STAMP, ServerValue.TIMESTAMP)
                                     .put(FROM, currentUserId)
                                     .get();

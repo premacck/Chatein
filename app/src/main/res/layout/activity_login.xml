@@ -9,7 +9,6 @@
     tools:context=".ui.auth.LoginActivity">
 
     <include
-        android:id="@+id/login_toolbar"
         layout="@layout/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height" />

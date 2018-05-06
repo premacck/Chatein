@@ -3,9 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.prembros.chatein">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
     <application
         android:name=".base.ChateinApplication"
@@ -49,6 +52,8 @@
         <activity
             android:name=".ui.social.UsersListActivity" />
         <activity
+            android:name=".ui.social.FriendsListActivity" />
+        <activity
             android:name=".ui.social.ProfileActivity"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.Overlay">
@@ -60,7 +65,6 @@
         </activity>
         <activity android:name=".ui.chat.ChatActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.social.FriendsListActivity" />
     </application>
 
 </manifest>

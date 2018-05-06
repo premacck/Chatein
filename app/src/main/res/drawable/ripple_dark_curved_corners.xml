@@ -6,6 +6,7 @@
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
             <solid android:color="@color/colorRippleDark" />
+            <corners android:radius="@dimen/auth_btn_corners"/>
         </shape>
     </item>
 </ripple>

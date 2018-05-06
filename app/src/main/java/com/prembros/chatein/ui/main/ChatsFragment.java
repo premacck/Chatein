@@ -41,11 +41,11 @@ public class ChatsFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         unbinder = ButterKnife.bind(this, rootView);
         noDataPlaceholder.setText(R.string.your_chats_appear_here);
-        initializeRecyclerView();
+        initializeChatsList();
         return rootView;
     }
 
-    private void initializeRecyclerView() {
+    private void initializeChatsList() {
         try {
             LinearLayoutManager manager = new LinearLayoutManager(getContext());
             manager.setReverseLayout(true);

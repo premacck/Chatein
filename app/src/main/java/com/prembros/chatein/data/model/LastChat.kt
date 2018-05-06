@@ -1,6 +1,7 @@
 package com.prembros.chatein.data.model
 
+@Suppress("PropertyName")
 class LastChat {
-    var isSeen: Boolean = false
+    var seen: Boolean = false
     var time_stamp: Long = 0
 }

@@ -67,4 +67,17 @@
     <string name="delete">Delete</string>
     <string name="un_friend">Unfriend</string>
     <string name="open_chat">Open chat</string>
+    <string name="image">Image</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+    <string name="file">File</string>
+    <string name="camera_permission_rationale">
+        Please allow us access to your camera and storage in order to capture image and send it to your friend.
+    </string>
+    <string name="storage_permission_rationale">
+        Please allow us access to your storage to select a file from device.
+    </string>
+    <string name="file_size_exceed_message">File must be under 5MB</string>
+    <string name="copy">Copy</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>

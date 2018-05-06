@@ -24,7 +24,6 @@ import com.prembros.chatein.util.ViewUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,9 +47,7 @@ public class UsersListActivity extends DatabaseActivity {
         setContentView(R.layout.activity_users);
         unbinder = ButterKnife.bind(this);
 
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.all_users);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setupToolbar(toolbar, R.string.all_users);
 
         initializeAllUsersList();
     }

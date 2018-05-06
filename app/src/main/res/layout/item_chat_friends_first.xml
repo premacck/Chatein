@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/root_layout"
+    android:foreground="@drawable/ripple_dark"
     android:tag="@id/tag_holder">
 
     <ImageView
@@ -11,7 +12,7 @@
         android:src="@drawable/ic_chat_others_pointer"
         android:scaleType="fitXY"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="@dimen/chat_padding"
+        android:layout_marginTop="@dimen/chat_margin"
         android:layout_gravity="top|start"
         android:contentDescription="@string/first_chat_pointer" />
 
@@ -32,7 +33,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="100dp"
-                style="@style/AppTheme.SelectableTextView"
                 android:textColor="#333333"/>
 
         </FrameLayout>

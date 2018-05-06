@@ -4,6 +4,7 @@
     <dimen name="default_margin">16dp</dimen>
     <dimen name="status_bar_height">24dp</dimen>
     <dimen name="chat_radius">6dp</dimen>
+    <dimen name="chat_margin">4dp</dimen>
     <dimen name="chat_padding">8dp</dimen>
     <dimen name="size_time_stamp">10sp</dimen>
     <dimen name="time_stamp_padding">2dp</dimen>

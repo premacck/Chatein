@@ -37,12 +37,8 @@ public class ImagePagerAdapter extends RecyclePagerAdapter<ImagePagerAdapter.Ima
 
     @Override public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         holder.image.getController().getSettings()
-                .setPanEnabled(true)
-                .setZoomEnabled(true)
-                .setDoubleTapEnabled(true)
                 .setRotationEnabled(true)
                 .setRestrictRotation(true)
-//                .setExitEnabled(true)
                 .setAnimationsDuration(200);
 
         glide.load(chatList.get(position).getMessage())

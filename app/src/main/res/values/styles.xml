@@ -2,13 +2,17 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="popupMenuStyle">@style/PopupMenu</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
+        <!--  It should be true otherwise action mode will not overlay toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+        <!--  For Custom Action Mode Background Color/Drawable -->
+        <item name="actionModeBackground">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.Overlay">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentNavigation">true</item>
@@ -43,7 +47,8 @@
         <item name="android:layout_gravity">end</item>
         <item name="android:layout_marginEnd">@dimen/default_margin</item>
         <item name="android:layout_marginStart">@dimen/action_bar_height</item>
-        <item name="android:layout_marginTop">@dimen/chat_padding</item>
+        <item name="android:layout_marginTop">@dimen/chat_margin</item>
+        <item name="android:layout_marginBottom">@dimen/chat_margin</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:paddingEnd">@dimen/chat_padding</item>
         <item name="android:paddingStart">@dimen/chat_padding</item>
@@ -57,7 +62,8 @@
         <item name="android:layout_gravity">start</item>
         <item name="android:layout_marginEnd">@dimen/action_bar_height</item>
         <item name="android:layout_marginStart">@dimen/default_margin</item>
-        <item name="android:layout_marginTop">@dimen/chat_padding</item>
+        <item name="android:layout_marginTop">@dimen/chat_margin</item>
+        <item name="android:layout_marginBottom">@dimen/chat_margin</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:paddingEnd">@dimen/chat_padding</item>
         <item name="android:paddingStart">@dimen/chat_padding</item>
@@ -66,6 +72,14 @@
 
     <style name="AppTheme.WhiteAccent">
         <item name="colorAccent">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.DarkAccent">
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="PopupMenu" parent="Widget.AppCompat.Light.PopupMenu">
+        <item name="android:popupBackground">#FFFFFF</item>
     </style>
 
 </resources>

@@ -9,7 +9,7 @@ import com.google.firebase.database.ServerValue;
 import com.prembros.chatein.injection.component.AppComponent;
 import com.prembros.chatein.injection.component.DaggerAppComponent;
 import com.prembros.chatein.injection.module.app.ApplicationModule;
-import com.prembros.chatein.util.CustomValueEventListener;
+import com.prembros.chatein.util.database.CustomValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 

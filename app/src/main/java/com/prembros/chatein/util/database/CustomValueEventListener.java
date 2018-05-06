@@ -1,4 +1,4 @@
-package com.prembros.chatein.util;
+package com.prembros.chatein.util.database;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

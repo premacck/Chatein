@@ -42,7 +42,7 @@ public class RegisterActivity extends BaseAuthActivity {
     @BindView(R.id.reg_email) TextInputLayout email;
     @BindView(R.id.reg_password) TextInputLayout password;
     @BindView(R.id.reg_create_account) Button registerBtn;
-    @BindView(R.id.register_toolbar) Toolbar toolbar;
+    @BindView(R.id.main_toolbar) Toolbar toolbar;
 
     public static void launchRegisterActivity(@NotNull Context from) {
         from.startActivity(new Intent(from, RegisterActivity.class));
@@ -53,10 +53,7 @@ public class RegisterActivity extends BaseAuthActivity {
         setContentView(R.layout.activity_register);
         try {
             unbinder = ButterKnife.bind(this);
-            setSupportActionBar(toolbar);
-            Objects.requireNonNull(getSupportActionBar()).setTitle("Create Account");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+            setupToolbar(toolbar, R.string.create_account);
             progressDialog = new ProgressDialog(this);
         } catch (Exception e) {
             e.printStackTrace();

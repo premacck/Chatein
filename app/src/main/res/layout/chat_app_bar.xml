@@ -13,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:foreground="@drawable/ripple_dark"
         android:orientation="horizontal">
 
         <ImageView
@@ -43,6 +44,7 @@
         android:orientation="vertical"
         android:animateLayoutChanges="true"
         android:gravity="center_vertical"
+        android:foreground="@drawable/ripple_dark"
         android:layout_gravity="center_vertical">
 
         <TextView

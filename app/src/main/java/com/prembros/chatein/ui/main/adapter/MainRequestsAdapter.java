@@ -20,7 +20,8 @@ import com.prembros.chatein.base.BaseFragment;
 import com.prembros.chatein.data.model.Request;
 import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.util.Annotations;
-import com.prembros.chatein.util.CustomValueEventListener;
+import com.prembros.chatein.util.ViewUtils;
+import com.prembros.chatein.util.database.CustomValueEventListener;
 import com.prembros.chatein.util.SocialListener;
 import com.prembros.chatein.util.SocialUtils;
 
@@ -93,6 +94,7 @@ public class MainRequestsAdapter extends FirebaseRecyclerAdapter<Request, MainRe
         private final RequestManager glide;
         private final WeakReference<Activity> activity;
         private SocialUtils socialUtils;
+        private String friendUserId;
 
         RequestViewHolder(View itemView, RequestManager glide, Activity activity) {
             super(itemView);
@@ -102,6 +104,7 @@ public class MainRequestsAdapter extends FirebaseRecyclerAdapter<Request, MainRe
         }
 
         public void bind(Request model, String friendUserId, String currentUserId) {
+            this.friendUserId = friendUserId;
             socialUtils = SocialUtils.get(currentUserId, friendUserId, this);
             try {
                 switch (Objects.requireNonNull(model.getRequest_type())) {
@@ -128,6 +131,10 @@ public class MainRequestsAdapter extends FirebaseRecyclerAdapter<Request, MainRe
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        @OnClick(R.id.root_layout) public void openProfile() {
+            ViewUtils.openProfile(activity.get(), friendUserId);
         }
 
         @OnClick(R.id.accept) public void requestAccepted() {

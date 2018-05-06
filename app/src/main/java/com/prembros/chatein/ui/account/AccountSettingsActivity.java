@@ -29,7 +29,7 @@ import com.prembros.chatein.R;
 import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.data.model.UserUpdater;
 import com.prembros.chatein.ui.base.DatabaseActivity;
-import com.prembros.chatein.util.CustomValueEventListener;
+import com.prembros.chatein.util.database.CustomValueEventListener;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.jetbrains.annotations.NotNull;

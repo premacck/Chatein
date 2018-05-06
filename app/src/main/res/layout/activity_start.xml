@@ -44,7 +44,7 @@
             android:drawablePadding="-25dp"
             android:drawableStart="@drawable/ic_login"
             android:background="@drawable/bg_login_btn"
-            android:foreground="@drawable/ripple_light"
+            android:foreground="@drawable/ripple_light_curved_corners"
             android:text="@string/login" />
 
         <Button
@@ -60,7 +60,7 @@
             android:drawablePadding="-25dp"
             android:drawableStart="@drawable/ic_person_add"
             android:background="@drawable/bg_register_btn"
-            android:foreground="@drawable/ripple_light"
+            android:foreground="@drawable/ripple_light_curved_corners"
             android:text="@string/create_new_account" />
 
         <Button
@@ -77,7 +77,7 @@
             android:drawablePadding="-34dp"
             android:drawableStart="@drawable/googleg_standard_color_18"
             android:background="@drawable/bg_google_btn"
-            android:foreground="@drawable/ripple_dark"
+            android:foreground="@drawable/ripple_dark_curved_corners"
             android:text="@string/continue_with_google"/>
 
     </LinearLayout>

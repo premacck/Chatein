@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/root_layout"
+    android:foreground="@drawable/ripple_dark"
     android:tag="@id/tag_holder">
 
     <LinearLayout
@@ -22,7 +23,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="100dp"
-                style="@style/AppTheme.SelectableTextView"
                 android:textColor="#333333"/>
 
         </FrameLayout>

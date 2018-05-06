@@ -36,7 +36,7 @@ public class LoginActivity extends BaseAuthActivity {
     @BindView(R.id.login_email) TextInputLayout email;
     @BindView(R.id.login_password) TextInputLayout password;
     @BindView(R.id.login_btn) Button loginBtn;
-    @BindView(R.id.login_toolbar) Toolbar toolbar;
+    @BindView(R.id.main_toolbar) Toolbar toolbar;
 
     public static void launchLoginActivity(@NotNull Context from) {
         from.startActivity(new Intent(from, LoginActivity.class));
@@ -45,15 +45,8 @@ public class LoginActivity extends BaseAuthActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        try {
-            unbinder = ButterKnife.bind(this);
-            setSupportActionBar(toolbar);
-            Objects.requireNonNull(getSupportActionBar()).setTitle("Login");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        unbinder = ButterKnife.bind(this);
+        setupToolbar(toolbar, R.string.login);
     }
 
     @OnClick(R.id.login_btn) public void performLogin() {

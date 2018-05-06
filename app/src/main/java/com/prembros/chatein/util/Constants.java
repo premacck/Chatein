@@ -42,6 +42,7 @@ public class Constants {
     public static final String _TIME_STAMP = "/time_stamp";
     public static final String MESSAGE = "message";
     public static final String MESSAGE_IMAGES = "message_images";
+    public static final String MESSAGE_FILES = "message_files";
     public static final String FROM_USER_ID = "from_user_id";
 
     public static final String BEFORE_AUTH = "before_auth";

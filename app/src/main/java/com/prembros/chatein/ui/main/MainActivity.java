@@ -24,8 +24,8 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.prembros.chatein.ui.auth.StartActivity.launchStartActivity;
 import static com.prembros.chatein.ui.account.AccountSettingsActivity.launchAccountSettingsActivity;
+import static com.prembros.chatein.ui.auth.StartActivity.launchStartActivity;
 import static com.prembros.chatein.ui.social.UsersListActivity.launchUsersActivity;
 import static com.prembros.chatein.util.CommonUtils.saveUserLocally;
 import static com.prembros.chatein.util.Constants.ONLINE;
@@ -36,6 +36,7 @@ public class MainActivity extends DatabaseActivity {
     @BindView(R.id.main_activity_toolbar) Toolbar toolbar;
     @BindView(R.id.view_pager) ViewPager viewPager;
     @BindView(R.id.main_tabs) TabLayout tabLayout;
+//    @BindView(R.id.action_delete) ImageButton deleteBtn;
 
     public static void launchMainActivity(@NotNull Context from) {
         saveUserLocally(from);
@@ -103,6 +104,14 @@ public class MainActivity extends DatabaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+//    public void showDeleteButton() {
+//        setVisibility(deleteBtn, VISIBLE);
+//    }
+//
+//    public void hideDeleteButton() {
+//        setVisibility(deleteBtn, GONE);
+//    }
 
     @Override public void onBackPressed() {
         if (viewPager.getCurrentItem() != 1)

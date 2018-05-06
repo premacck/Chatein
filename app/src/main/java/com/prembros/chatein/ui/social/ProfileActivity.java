@@ -26,7 +26,7 @@ import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.ui.base.DatabaseActivity;
 import com.prembros.chatein.util.Annotations;
 import com.prembros.chatein.util.Annotations.SocialState;
-import com.prembros.chatein.util.CustomValueEventListener;
+import com.prembros.chatein.util.database.CustomValueEventListener;
 import com.prembros.chatein.util.SocialListener;
 import com.prembros.chatein.util.SocialUtils;
 
