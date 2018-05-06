@@ -43,32 +43,33 @@ public class ImagePagerAdapter extends RecyclePagerAdapter<ImagePagerAdapter.Ima
     @Override public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup container) {
         View view = LayoutInflater.from(viewPager.getContext()).inflate(R.layout.item_chat_pager, container, false);
         return new ImageViewHolder(view);
-//        ImageViewHolder holder = new ImageViewHolder(container);
-//        holder.image.getController().enableScrollInViewPager(viewPager);
-//        return holder;
     }
 
     @Override public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        holder.image.getController().getSettings()
-                .setRotationEnabled(true)
-                .setRestrictRotation(true)
-                .setAnimationsDuration(200);
+        try {
+            holder.image.getController().getSettings()
+                    .setRotationEnabled(true)
+                    .setRestrictRotation(true)
+                    .setAnimationsDuration(200);
 
-        if (Objects.equals(chatList.get(position).getType(), IMAGE)) {
-            holder.image.setVisibility(View.VISIBLE);
-            holder.message.setVisibility(View.GONE);
-            glide.load(chatList.get(position).getMessage())
-                    .apply(RequestOptions.placeholderOf(android.R.drawable.progress_indeterminate_horizontal))
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .into(holder.image);
-        } else {
-            holder.image.setVisibility(View.GONE);
-            holder.message.setVisibility(View.VISIBLE);
-            holder.message.setText(
-                    Objects.equals(chatList.get(position).getType(), TEXT) ?
-                            chatList.get(position).getMessage() :
-                            FileUtil.getExtension(chatList.get(position).getMessage()) + " File"
-            );
+            if (Objects.equals(chatList.get(position).getType(), IMAGE)) {
+                holder.image.setVisibility(View.VISIBLE);
+                holder.message.setVisibility(View.GONE);
+                glide.load(chatList.get(position).getMessage())
+                        .apply(RequestOptions.placeholderOf(android.R.drawable.progress_indeterminate_horizontal))
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .into(holder.image);
+            } else {
+                holder.image.setVisibility(View.GONE);
+                holder.message.setVisibility(View.VISIBLE);
+                holder.message.setText(
+                        Objects.equals(chatList.get(position).getType(), TEXT) ?
+                                chatList.get(position).getMessage() :
+                                FileUtil.getExtension(chatList.get(position).getMessage()) + " File"
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -88,8 +89,6 @@ public class ImagePagerAdapter extends RecyclePagerAdapter<ImagePagerAdapter.Ima
         ImageViewHolder(@NotNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-//            super(new GestureImageView(itemView.getContext()));
-//            image = (GestureImageView) this.itemView;
         }
     }
 }
