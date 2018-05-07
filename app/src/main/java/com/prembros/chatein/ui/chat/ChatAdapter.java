@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -30,6 +31,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -202,7 +204,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                                         String friendUserBranch = chatBranch + "/" + key;
                                         try {
                                             if (Objects.equals(selectedItems.get(index).getType(), IMAGE)) {
-                                                deleteImageFromStorage(requireNonNull(key), friendUserBranch);
+                                                deleteImageFromStorage(friendUserBranch);
                                             }
                                             else deleteChat(friendUserBranch);
                                         } catch (Exception e) {
@@ -239,21 +241,27 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                 });
     }
 
-    private void deleteImageFromStorage(@NotNull final String key, final String friendUserBranch) {
-        final StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(MESSAGE_IMAGES);
+    private void deleteImageFromStorage(final String friendUserBranch) {
+        final StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                .child(MESSAGE_IMAGES).child(friendUserBranch + ".JPG");
         try {
-            storageRef.child(currentUserId).child(friendUserId).child(key + ".jpg").delete()
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            try {
-                                activity.actionCompleted();
-                                if (!task.isSuccessful()) Objects.requireNonNull(task.getException()).printStackTrace();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+            storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    storageRef.delete()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    try {
+                                        activity.actionCompleted();
+                                        if (!task.isSuccessful()) Objects.requireNonNull(task.getException()).printStackTrace();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                }
+            });
             deleteChat(friendUserBranch);
         } catch (Exception e) {
             e.printStackTrace();

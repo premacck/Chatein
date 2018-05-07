@@ -23,6 +23,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification_icon" />
         <service
             android:name=".data.service.MyFirebaseMessagingService"
             tools:ignore="ExportedService">

@@ -1,10 +1,12 @@
 package com.prembros.chatein.data.service;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +24,8 @@ import static com.prembros.chatein.util.Constants.FROM_USER_ID;
 import static com.prembros.chatein.util.Constants.TYPE;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+    private NotificationManager manager;
 
     @Override public void onMessageReceived(RemoteMessage remoteMessage) {
         try {
@@ -49,12 +53,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             mBuilder.setContentIntent(resultPendingIntent);
 
             int notificationId = (int) System.currentTimeMillis();
-            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            createNotificationChannel();
             if (manager != null) {
                 manager.notify(notificationId, mBuilder.build());
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Messages";
+            String description = "Message notifications";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("Uploads", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
         }
     }
 

@@ -99,11 +99,11 @@ public class UploadService extends IntentService implements UploadCallbacks {
                 UploadNotification.begin(this, personName, chatType);
 
                 String extension = FileUtil.getExtension(filePath.toString());
-                StorageReference fileReference = FirebaseStorage.getInstance().getReference()
-                        .child(Objects.equals(chatType, IMAGE) ? MESSAGE_IMAGES : MESSAGE_FILES)
-                        .child(currentUserId).child(friendUserId).child(
-                                Objects.equals(chatType, IMAGE) ? pushId + extension : fileName
-                        );
+                StorageReference fileReference = Objects.equals(chatType, IMAGE) ?
+                        FirebaseStorage.getInstance().getReference().child(MESSAGE_IMAGES)
+                                .child(currentUserId).child(friendUserId).child(pushId + extension) :
+                FirebaseStorage.getInstance().getReference().child(MESSAGE_FILES)
+                        .child(currentUserId).child(friendUserId).child(fileName);
 
                 fileReference.putFile(filePath).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
