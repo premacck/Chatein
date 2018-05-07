@@ -97,7 +97,9 @@ public class NotificationUtil {
     }
 
     public static void clearMap() {
-        map.clear();
-        map = null;
+        if (map != null) {
+            map.clear();
+            map = null;
+        }
     }
 }
