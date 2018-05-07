@@ -80,4 +80,5 @@
     <string name="file_size_exceed_message">File must be under 5MB</string>
     <string name="copy">Copy</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="seen_tick">Seen tick</string>
 </resources>

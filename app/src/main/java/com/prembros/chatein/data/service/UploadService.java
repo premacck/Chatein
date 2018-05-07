@@ -54,12 +54,14 @@ public class UploadService extends IntentService implements UploadCallbacks {
     public static final String UPLOAD_URL = "uploadUrl";
     private static final String CHAT_TYPE = "chatType";
     private static final String PUSH_ID = "pushId";
+    private static final String FILE_NAME = "fileName";
 
     private Bundle bundle;
     private ResultReceiver receiver;
 
     public static void launchUploadService(Context context, String pushId, Uri filePath, String personName, @ChatType String chatType,
-                                           String currentUserId, String friendUserId, VideoUploadReceiver videoUploadReceiver) {
+                                           String currentUserId, String friendUserId, String fileName,
+                                           VideoUploadReceiver videoUploadReceiver) {
         Intent intent = new Intent(context, UploadService.class);
         intent.putExtra(PUSH_ID, pushId);
         intent.putExtra(UPLOAD_URL, filePath);
@@ -67,6 +69,7 @@ public class UploadService extends IntentService implements UploadCallbacks {
         intent.putExtra(CHAT_TYPE, chatType);
         intent.putExtra(CURRENT_USER_ID, currentUserId);
         intent.putExtra(FRIEND_USER_ID, friendUserId);
+        intent.putExtra(FILE_NAME, fileName);
         intent.putExtra(VIDEO_UPLOAD_RECEIVER, videoUploadReceiver);
         context.startService(intent);
     }
@@ -89,12 +92,16 @@ public class UploadService extends IntentService implements UploadCallbacks {
             @ChatType final String chatType = intent.getStringExtra(CHAT_TYPE);
             final String currentUserId = intent.getStringExtra(CURRENT_USER_ID);
             final String friendUserId = intent.getStringExtra(FRIEND_USER_ID);
+            final String fileName = intent.getStringExtra(FILE_NAME);
             try {
-                UploadNotification.begin(this, personName, friendUserId);
+                UploadNotification.begin(this, personName, chatType);
 
+                String extension = FileUtil.getExtension(filePath.toString());
                 StorageReference fileReference = FirebaseStorage.getInstance().getReference()
                         .child(Objects.equals(chatType, IMAGE) ? MESSAGE_IMAGES : MESSAGE_FILES)
-                        .child(currentUserId).child(friendUserId).child(pushId + FileUtil.getExtension(filePath.toString()));
+                        .child(currentUserId).child(friendUserId).child(
+                                Objects.equals(chatType, IMAGE) ? pushId + extension : fileName
+                        );
 
                 fileReference.putFile(filePath).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override

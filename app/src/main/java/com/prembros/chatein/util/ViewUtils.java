@@ -2,9 +2,11 @@ package com.prembros.chatein.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -95,5 +97,19 @@ public class ViewUtils {
                     .apply(RequestOptions.circleCropTransform().placeholder(R.drawable.ic_add_user_small))
                     .into(imageView);
         } else imageView.setImageResource(R.drawable.ic_add_user_small);
+    }
+
+    public static void showAlertDialog(Activity activity, String message, DialogInterface.OnClickListener positiveListener) {
+        new AlertDialog.Builder(activity)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(R.string.yes, positiveListener)
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

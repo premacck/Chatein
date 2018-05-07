@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.Query;
 import com.prembros.chatein.R;
 import com.prembros.chatein.base.BaseFragment;
 import com.prembros.chatein.data.model.LastChat;
@@ -53,8 +54,11 @@ public class ChatsFragment extends BaseFragment {
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(manager);
 
+            Query query = getParentActivity().getMyChatRef().orderByChild(TIME_STAMP);
+            query.keepSynced(true);
+
             FirebaseRecyclerOptions<LastChat> options = new FirebaseRecyclerOptions.Builder<LastChat>()
-                    .setQuery(getParentActivity().getMyChatRef().orderByChild(TIME_STAMP), LastChat.class).build();
+                    .setQuery(query, LastChat.class).build();
 
             adapter = new MainChatsAdapter(options, this);
             recyclerView.setAdapter(adapter);

@@ -4,13 +4,16 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -49,7 +52,6 @@ import com.prembros.chatein.util.Annotations;
 import com.prembros.chatein.util.Annotations.ChatType;
 import com.prembros.chatein.util.CustomLinearLayoutManager;
 import com.prembros.chatein.util.DateUtil;
-import com.prembros.chatein.util.FileUtil;
 import com.prembros.chatein.util.database.ChatEventListener;
 import com.prembros.chatein.util.database.CustomValueEventListener;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -80,7 +82,6 @@ import static com.prembros.chatein.ui.social.ProfileActivity.launchProfileActivi
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
 import static com.prembros.chatein.util.CommonUtils.makeSnackBar;
-import static com.prembros.chatein.util.CommonUtils.showToast;
 import static com.prembros.chatein.util.Constants.CHAT_;
 import static com.prembros.chatein.util.Constants.DEFAULT;
 import static com.prembros.chatein.util.Constants.FROM;
@@ -90,8 +91,12 @@ import static com.prembros.chatein.util.Constants.ONLINE;
 import static com.prembros.chatein.util.Constants.SEEN;
 import static com.prembros.chatein.util.Constants.TIME_STAMP;
 import static com.prembros.chatein.util.Constants.TYPE;
+import static com.prembros.chatein.util.FileUtil.isFileImege;
+import static com.prembros.chatein.util.FileUtil.isFileSizeLegal;
+import static com.prembros.chatein.util.FileUtil.isImageSizeLegal;
 import static com.prembros.chatein.util.ViewUtils.disableView;
 import static com.prembros.chatein.util.ViewUtils.enableView;
+import static com.prembros.chatein.util.ViewUtils.showAlertDialog;
 
 public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewImageListener {
 
@@ -406,8 +411,8 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
         toggleViewAnimator();
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
             startActivityForResult(Intent.createChooser(intent, "Select File"), FILE_PICK);
         } else EasyPermissions.requestPermissions(this, getString(R.string.storage_permission_rationale), RC_STORAGE, perms);
     }
@@ -459,42 +464,79 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case GALLERY_PICK:
-                    startImageCropper(data.getData());
-                    break;
-                case CAMERA_PICK:
-                    try {
+        try {
+            if (resultCode == RESULT_OK) {
+                switch (requestCode) {
+                    case GALLERY_PICK:
+                        if (!isImageSizeLegal(this, Objects.requireNonNull(data.getData()))) return;
+                        startImageCropper(data.getData());
+                        break;
+                    case CAMERA_PICK:
                         Bitmap photo = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                         startImageCropper(getPhotoUri(photo));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    if (fileSizeExceeds(result.getUri())) return;
-                    DatabaseReference userImageMessagePush = getMessagesRef(friendUserId).push();
-                    String imagePushId = userImageMessagePush.getKey();
+                        break;
+                    case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                        CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                        if (!isImageSizeLegal(this, result.getUri())) return;
 
-                    uploadFile(result.getUri(), imagePushId, ChatType.IMAGE);
-                    break;
-                case FILE_PICK:
-                    if (fileSizeExceeds(data.getData())) return;
-                    DatabaseReference userFileMessagePush = getMessagesRef(friendUserId).push();
-                    String filePushId = userFileMessagePush.getKey();
+                        DatabaseReference userImageMessagePush = getMessagesRef(friendUserId).push();
+                        String imagePushId = userImageMessagePush.getKey();
+                        uploadFile(result.getUri(), imagePushId, ChatType.IMAGE, null);
+                        break;
+                    case FILE_PICK:
+                        final Uri fileUri = data.getData();
+                        String uriString;
+                        if (fileUri != null) {
+                            uriString = fileUri.toString();
+                            File file = new File(uriString);
+                            String displayName = null;
 
-                    uploadFile(data.getData(), filePushId, ChatType.FILE);
-                    break;
+                            if (uriString.startsWith("content://")) {
+                                Cursor cursor = null;
+                                try {
+                                    cursor = getContentResolver().query(fileUri,
+                                            null, null, null, null);
+                                    if (cursor != null && cursor.moveToFirst()) {
+                                        displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+
+                                        long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                                        if (size > 5000000) return;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if (cursor != null) cursor.close();
+                                }
+                            } else if (uriString.startsWith("file://")) {
+                                if (!isFileSizeLegal(this, file)) return;
+                                displayName = file.getName();
+                            }
+
+                            if (!isFileSizeLegal(this, data.getData())) return;
+
+                            if (isFileImege(displayName)) {
+                                startImageCropper(fileUri);
+                                return;
+                            }
+                            final String finalDisplayName = displayName;
+                            showAlertDialog(this,
+                                    "You want to send " + displayName + " to " + friendName + "?",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            DatabaseReference userFileMessagePush = getMessagesRef(friendUserId).push();
+                                            String filePushId = userFileMessagePush.getKey();
+                                            uploadFile(fileUri, filePushId, ChatType.FILE, finalDisplayName);
+                                        }
+                                    }
+                            );
+                        }
+                        break;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    private boolean fileSizeExceeds(Uri uri) {
-        boolean isLegal = FileUtil.isFileSizeLegal(this, uri);
-        if (!isLegal) showToast(this, R.string.file_size_exceed_message);
-        return !isLegal;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -520,11 +562,11 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
         }
     }
 
-    private void uploadFile(Uri resultUri, String key, @ChatType final String chatType) {
+    private void uploadFile(Uri resultUri, String key, @ChatType final String chatType, String fileName) {
         actionInProgress();
         updateFirebaseDatabase(key, DEFAULT, chatType);
         launchUploadService(
-                this, key, resultUri, friendName, chatType, currentUserId, friendUserId,
+                this, key, resultUri, friendName, chatType, currentUserId, friendUserId, fileName,
                 new VideoUploadReceiver(new Handler()).setReceiver(new VideoUploadReceiver.Receiver() {
                     @Override
                     public void onReceiverResult(@Annotations.UploadCallback int resultCode, Bundle resultData) {

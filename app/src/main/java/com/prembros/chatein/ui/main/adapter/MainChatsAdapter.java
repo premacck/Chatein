@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,16 +51,14 @@ import butterknife.OnLongClick;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.prembros.chatein.ui.chat.ChatActivity.launchChatActivity;
-import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
 import static com.prembros.chatein.util.Constants.CHAT_;
+import static com.prembros.chatein.util.Constants.FROM;
 import static com.prembros.chatein.util.Constants.MESSAGE;
 import static com.prembros.chatein.util.Constants.MESSAGES_;
-import static com.prembros.chatein.util.Constants.MESSAGE_IMAGES;
 import static com.prembros.chatein.util.Constants.ONLINE;
 import static com.prembros.chatein.util.Constants.TYPE;
 import static com.prembros.chatein.util.DateUtil.getTime;
 import static com.prembros.chatein.util.ViewUtils.loadProfilePic;
-import static java.util.Objects.requireNonNull;
 
 public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainChatsAdapter.ChatViewHolder> {
 
@@ -81,7 +81,8 @@ public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainCh
                     try {
                         String message = Objects.requireNonNull(dataSnapshot.child(MESSAGE).getValue()).toString();
                         String type = Objects.requireNonNull(dataSnapshot.child(TYPE).getValue()).toString();
-                        holder.setMessage(message, type, model);
+                        String from = Objects.requireNonNull(dataSnapshot.child(FROM).getValue()).toString();
+                        holder.setMessage(message, type, model, from);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -140,8 +141,9 @@ public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainCh
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             try {
-                                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(MESSAGE_IMAGES);
                                 String currentUserId = fragment.getCurrentUserId();
+                                StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child(currentUserId);
+                                StorageReference filesRef = FirebaseStorage.getInstance().getReference().child(currentUserId);
                                 for (final int index : selectedItems.keySet()) {
                                     String friendUserBranch = currentUserId + "/" + selectedItems.get(index);
                                     UpdateRequest.forDatabase(fragment.getRoot())
@@ -150,11 +152,32 @@ public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainCh
                                             .update(new DatabaseReference.CompletionListener() {
                                                 @Override
                                                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                                    getRef(index).removeValue();
+//                                                    getRef(index).removeValue();
                                                     notifyItemRemoved(index);
                                                 }
                                             });
-                                    storageRef.child(currentUserId).child(selectedItems.get(index)).delete();
+
+                                    OnCompleteListener<Void> onCompletionListener = new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            try {
+                                                if (!task.isSuccessful() && task.getException() != null)
+                                                    task.getException().printStackTrace();
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };
+                                    try {
+                                        imagesRef.child(selectedItems.get(index)).delete().addOnCompleteListener(onCompletionListener);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    try {
+                                        filesRef.child(selectedItems.get(index)).delete().addOnCompleteListener(onCompletionListener);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                                 multiSelect = false;
                                 selectedItems.clear();
@@ -184,6 +207,7 @@ public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainCh
         @BindView(R.id.root_layout) LinearLayout layout;
         @BindView(R.id.dp) ImageView dp;
         @BindView(R.id.selected_tick) ImageView selectedTick;
+        @BindView(R.id.seen_tick) ImageView seenTick;
         @BindView(R.id.online) ImageView onlineStatus;
         @BindView(R.id.name) TextView name;
         @BindView(R.id.time) TextView time;
@@ -215,27 +239,34 @@ public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainCh
             }
         }
 
-        public void setMessage(String data, String type, LastChat lastChat) {
+        public void setMessage(String data, String type, LastChat lastChat, String from) {
             try {
-                status.setText(
-                        Objects.equals(type, Annotations.ChatType.IMAGE) ?
-                                "Image" :
-                                Objects.equals(type, TEXT) ?
-                                        data :
-                                        FileUtil.getExtension(data) + " File"
-                );
-                status.setCompoundDrawablesWithIntrinsicBounds(
-                        Objects.equals(type, Annotations.ChatType.IMAGE) ? R.drawable.ic_image : 0, 0, 0, 0);
                 status.setTypeface(status.getTypeface(), lastChat.getSeen() ? Typeface.NORMAL : Typeface.BOLD);
                 status.setTextColor(Color.parseColor(lastChat.getSeen() ? "#9e9e9e" : "#333333"));
 
                 String timeString = getTime(lastChat.getTime_stamp());
                 time.setVisibility(timeString != null ? VISIBLE : GONE);
                 time.setText(timeString);
-                status.setCompoundDrawablesWithIntrinsicBounds(
-                        Objects.equals(adapter.fragment.getCurrentUserId(), userId) ?
-                                requireNonNull(lastChat.getSeen()) ? R.drawable.ic_double_tick :
-                                        R.drawable.ic_tick : 0, 0, 0, 0);
+
+                if (Objects.equals(type, Annotations.ChatType.TEXT)) {
+                    status.setText(data);
+                    status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
+                else if (Objects.equals(type, Annotations.ChatType.IMAGE)) {
+                    status.setText(R.string.image);
+                    status.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_image, 0, 0, 0);
+                }
+                else if (Objects.equals(type, Annotations.ChatType.FILE)) {
+                    String fileName = FileUtil.getExtension(data) + " file";
+                    status.setText(fileName);
+                    status.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_file, 0, 0, 0);
+                }
+                if (Objects.equals(from, adapter.fragment.getCurrentUserId())) {
+                    seenTick.setVisibility(VISIBLE);
+                    if (lastChat.getSeen()) {
+                        seenTick.setImageResource(R.drawable.ic_double_tick);
+                    } else seenTick.setImageResource(R.drawable.ic_tick_dark);
+                } else seenTick.setVisibility(GONE);
             } catch (Exception e) {
                 e.printStackTrace();
             }

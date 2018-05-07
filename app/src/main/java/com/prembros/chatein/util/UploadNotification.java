@@ -9,23 +9,30 @@ import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
+import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
+
 public class UploadNotification {
 
     private static int NOTIFICATION_ID = 1111;
 
     private static NotificationManager mNotificationManager;
     private static NotificationCompat.Builder builder;
+    private static String chatType;
     private static String name;
     private static UploadNotification uploadNotification;
 
-    public static UploadNotification get(Context context, String to) {
+    public static UploadNotification get(Context context, String to, String chatType) {
+        UploadNotification.chatType = chatType;
         if(uploadNotification == null)
             uploadNotification = new UploadNotification(context, to);
 
         return uploadNotification;
     }
 
-    public static void begin(Context context, String to, String friendUserId) {
+    public static void begin(Context context, String to, String chatType) {
+        UploadNotification.chatType = chatType;
         if(uploadNotification == null)
             uploadNotification = new UploadNotification(context, to);
     }
@@ -34,7 +41,7 @@ public class UploadNotification {
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         name = to;
         builder = new NotificationCompat.Builder(context, "Uploads")
-                .setContentTitle("Sending image to " + to)
+                .setContentTitle("Sending " + (Objects.equals(chatType, IMAGE) ? "image" : "file") + " to " + to)
                 .setSmallIcon(android.R.drawable.stat_sys_upload)
                 .setProgress(100, 0, false)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -45,7 +52,7 @@ public class UploadNotification {
     public static void update(int percent) {
         try {
             builder
-                    .setContentTitle("Sending image to " + name)
+                    .setContentTitle("Sending " + (Objects.equals(chatType, IMAGE) ? "image" : "file") + " to " + name)
                     .setContentText(percent + "%")
                     .setSmallIcon(android.R.drawable.stat_sys_upload)
                     .setOngoing(true)

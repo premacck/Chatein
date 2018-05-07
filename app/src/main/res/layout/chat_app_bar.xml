@@ -42,6 +42,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
         android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:animateLayoutChanges="true"
         android:gravity="center_vertical"
         android:foreground="@drawable/ripple_dark"

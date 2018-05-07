@@ -41,42 +41,52 @@ public class DateUtil extends Application {
     private static final String YESTERDAY = "yesterday";
     private static final String DAYS_AGO = " days ago";
 
-    @Nullable public static String getTimeAgo(long time) {
-        if (time < 1000000000000L) {
-            // if timestamp given in seconds, convert to millis
-            time *= 1000;
-        }
+    public static String getTimeAgo(long time) {
+        try {
+            if (time < 1000000000000L) {
+                // if timestamp given in seconds, convert to millis
+                time *= 1000;
+            }
 
-        long now = System.currentTimeMillis();
-        if (time > now || time <= 0) {
-            return null;
-        }
+            long now = System.currentTimeMillis();
+            if (time > now || time <= 0) {
+                return "";
+            }
 
-        final long diff = now - time;
-        if (diff < MINUTE_MILLIS) {
-            return MOMENTS_AGO;
-        } else if (diff < 2 * MINUTE_MILLIS) {
-            return A_MINUTE_AGO;
-        } else if (diff < 50 * MINUTE_MILLIS) {
-            return diff / MINUTE_MILLIS + MINUTES_AGO;
-        } else if (diff < 90 * MINUTE_MILLIS) {
-            return AN_HOUR_AGO;
-        } else if (diff < 24 * HOUR_MILLIS) {
-            return diff / HOUR_MILLIS + HOURS_AGO;
-        } else if (diff < 48 * HOUR_MILLIS) {
-            return YESTERDAY;
-        } else {
-            return diff / DAY_MILLIS + DAYS_AGO;
+            final long diff = now - time;
+            if (diff < MINUTE_MILLIS) {
+                return MOMENTS_AGO;
+            } else if (diff < 2 * MINUTE_MILLIS) {
+                return A_MINUTE_AGO;
+            } else if (diff < 50 * MINUTE_MILLIS) {
+                return diff / MINUTE_MILLIS + MINUTES_AGO;
+            } else if (diff < 90 * MINUTE_MILLIS) {
+                return AN_HOUR_AGO;
+            } else if (diff < 24 * HOUR_MILLIS) {
+                return diff / HOUR_MILLIS + HOURS_AGO;
+            } else if (diff < 48 * HOUR_MILLIS) {
+                return YESTERDAY;
+            } else {
+                return diff / DAY_MILLIS + DAYS_AGO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
 
     private static int getTimeType(@NotNull String timeAgo) {
-        if (timeAgo.contains(MOMENTS_AGO)) return 0;
-        else if (timeAgo.contains(MOMENTS_AGO) || timeAgo.contains(A_MINUTE_AGO) ||
-                timeAgo.contains(MINUTES_AGO) || timeAgo.contains(AN_HOUR_AGO) || timeAgo.contains(HOURS_AGO))
-            return 1;
-        else if (timeAgo.contains(YESTERDAY)) return 2;
-        else return 3;
+        try {
+            if (timeAgo.contains(MOMENTS_AGO)) return 0;
+            else if (timeAgo.contains(MOMENTS_AGO) || timeAgo.contains(A_MINUTE_AGO) ||
+                    timeAgo.contains(MINUTES_AGO) || timeAgo.contains(AN_HOUR_AGO) || timeAgo.contains(HOURS_AGO))
+                return 1;
+            else if (timeAgo.contains(YESTERDAY)) return 2;
+            else return 3;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     @Nullable public static String getTime(long timeStamp) {

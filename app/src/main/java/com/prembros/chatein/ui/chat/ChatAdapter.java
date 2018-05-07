@@ -52,6 +52,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
+import static com.prembros.chatein.util.Annotations.ChatType.FILE;
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
 import static com.prembros.chatein.util.CommonUtils.showToast;
@@ -119,6 +120,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         try {
             Chat chat = chatList.get(position);
             switch (requireNonNull(chat.getType())) {
+                case FILE:
                 case TEXT:
                     holder.bind(chat);
                     break;
@@ -189,6 +191,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                     if (clipboard != null)
                         clipboard.setPrimaryClip(clip);
                     showToast(activity, R.string.copied_to_clipboard);
+                    finishModeAndNotify();
                     break;
                 case R.id.action_delete:
                     String suffix = selectedItems.size() <=1 ? " this message?\n\n" : " selected messages?\n\n";
@@ -204,9 +207,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                                         String friendUserBranch = chatBranch + "/" + key;
                                         try {
                                             if (Objects.equals(selectedItems.get(index).getType(), IMAGE)) {
-                                                deleteImageFromStorage(requireNonNull(key), friendUserBranch);
+                                                deleteImageFromStorage(requireNonNull(key), friendUserBranch, index);
                                             }
-                                            else deleteChat(friendUserBranch);
+                                            else deleteChat(friendUserBranch, index);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -223,28 +226,32 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                             .show();
                     break;
             }
-            multiSelect = false;
-            selectedItems.clear();
-            activity.notifyDataSetChanged();
-            mode.finish();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
     }
 
-    private synchronized void deleteChat(String friendUserBranch) {
+    private void finishModeAndNotify() {
+        multiSelect = false;
+        selectedItems.clear();
+        activity.notifyDataSetChanged();
+        mode.finish();
+    }
+
+    private void deleteChat(String friendUserBranch, final int index) {
         UpdateRequest.forDatabase(activity.getRootRef())
                 .put(MESSAGES_ + friendUserBranch, null)
                 .update(new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError error, DatabaseReference ref) {
+                        finishModeAndNotify();
                         activity.actionCompleted();
                     }
                 });
     }
 
-    private synchronized void deleteImageFromStorage(@NotNull final String key, final String friendUserBranch) {
+    private void deleteImageFromStorage(@NotNull final String key, final String friendUserBranch, int index) {
         final StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(MESSAGE_IMAGES);
         try {
             storageRef.child(currentUserId).child(friendUserId).child(key + ".jpg").delete()
@@ -259,7 +266,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                             }
                         }
                     });
-            deleteChat(friendUserBranch);
+            deleteChat(friendUserBranch, index);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -304,7 +311,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                 chatView.setText(
                         Objects.equals(chat.getType(), TEXT) ?
                                 chat.getMessage() :
-                                FileUtil.getExtension(chat.getMessage()) + " File"
+                                "*** " + FileUtil.getExtension(chat.getMessage()) + " file ***"
                 );
                 timeView.setText(getTime(requireNonNull(chat.getTime_stamp())));
                 maybeSetSeen();
@@ -350,6 +357,24 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                     Objects.equals(adapter.currentUserId, chat.getFrom()) ?
                             requireNonNull(chat.getSeen()) ? R.drawable.ic_double_tick :
                                     R.drawable.ic_tick : 0, 0);
+        }
+
+        @OnClick(R.id.chat) public void openFile() {
+            if (Objects.equals(chat.getType(), FILE))showToast(adapter.activity, "File handler coming soon");
+
+            /*PackageManager pm = adapter.activity.getPackageManager();
+//            This is the file you want to show
+            File file = new File("filename" + FileUtil.getExtension(chat.getMessage()));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.fromFile(file));
+//            Determine if Android can resolve this implicit Intent
+            ResolveInfo info = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+            if (info != null) {
+                // There is something installed that can VIEW this file)
+            } else {
+                // Offer to download a viewer here
+            }*/
         }
 
         @OnClick(R.id.chat_image) public void viewImage() {

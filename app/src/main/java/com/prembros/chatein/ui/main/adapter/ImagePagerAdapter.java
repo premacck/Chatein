@@ -65,7 +65,7 @@ public class ImagePagerAdapter extends RecyclePagerAdapter<ImagePagerAdapter.Ima
                 holder.message.setText(
                         Objects.equals(chatList.get(position).getType(), TEXT) ?
                                 chatList.get(position).getMessage() :
-                                FileUtil.getExtension(chatList.get(position).getMessage()) + " File"
+                                FileUtil.getExtension(chatList.get(position).getMessage()) + " file"
                 );
             }
         } catch (Exception e) {
