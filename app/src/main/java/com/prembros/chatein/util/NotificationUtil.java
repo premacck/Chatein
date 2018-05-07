@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NotificationUtil {
+
     private static Map<Character, Integer> map = new HashMap<>();
-    public static void init() {
+
+    private static void init() {
         if (map.isEmpty()) {
             map.put('a', 1);
             map.put('b', 2);
@@ -62,8 +64,17 @@ public class NotificationUtil {
             map.put('X', 24);
             map.put('Y', 25);
             map.put('Z', 26);
-            map.put('-', 1);
-            map.put('_', 1);
+            map.put('-', 6);
+            map.put('_', 5);
+            map.put('1', 1);
+            map.put('2', 2);
+            map.put('3', 3);
+            map.put('4', 4);
+            map.put('5', 5);
+            map.put('6', 6);
+            map.put('7', 7);
+            map.put('8', 8);
+            map.put('9', 9);
         }
     }
 
@@ -83,5 +94,10 @@ public class NotificationUtil {
             }
         }
         return id;
+    }
+
+    public static void clearMap() {
+        map.clear();
+        map = null;
     }
 }

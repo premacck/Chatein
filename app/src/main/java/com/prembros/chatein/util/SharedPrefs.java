@@ -92,5 +92,6 @@ public class SharedPrefs {
                 getPreferences(context).edit().remove(key).apply();
             }
         }
+        NotificationUtil.clearMap();
     }
 }
