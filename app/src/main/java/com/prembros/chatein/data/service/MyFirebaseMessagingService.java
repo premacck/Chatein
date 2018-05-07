@@ -14,7 +14,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.prembros.chatein.R;
 import com.prembros.chatein.util.NotificationUtil;
+import com.prembros.chatein.util.SharedPrefs;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.prembros.chatein.ui.social.ProfileActivity.USER_ID;
@@ -30,43 +32,55 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override public void onMessageReceived(final RemoteMessage remoteMessage) {
         try {
-//            String body = Objects.requireNonNull(remoteMessage.getNotification()).getBody();
+            String title = remoteMessage.getData().get("title");
             String body = remoteMessage.getData().get("body");
+            String fromUserId = remoteMessage.getData().get(FROM_USER_ID);
+            String type = remoteMessage.getData().get(TYPE);
+            String dataUrl = remoteMessage.getData().get(DATA_URL);
+            String clickAction = remoteMessage.getData().get("click_action");
+
+            SharedPrefs.saveNotification(getApplicationContext(), fromUserId, body);
 
             final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "BaseNotifications")
                     .setSmallIcon(R.drawable.ic_notification_icon)
-                    .setContentTitle(remoteMessage.getData().get("title"))
-//                    .setContentTitle(Objects.requireNonNull(remoteMessage.getNotification()).getTitle())
+                    .setContentTitle(title)
                     .setContentText(body)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH);
 
             if (body != null && body.length() > 30) {
-                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getData().get("body")));
+                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(body));
             }
 
-            if (Objects.equals(remoteMessage.getData().get(TYPE), IMAGE)) {
+            if (Objects.equals(type, IMAGE)) {
                 Bitmap bitmap = Glide.with(this)
                         .asBitmap()
-                        .load(remoteMessage.getData().get(DATA_URL))
+                        .load(dataUrl)
                         .submit(200, 200)
                         .get();
                 mBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null));
                 mBuilder.setLargeIcon(bitmap);
-            } else if (Objects.equals(remoteMessage.getData().get(TYPE), TEXT)) {
-                mBuilder.setStyle(new NotificationCompat.InboxStyle()
-                        .setBigContentTitle(remoteMessage.getData().get("title"))
-                        .addLine(body));
+            } else if (Objects.equals(type, TEXT)) {
+                NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
+                        .setBigContentTitle(title);
+                List<String> allNotifications = SharedPrefs.getAllNotifications(getApplicationContext(), fromUserId);
+                if (allNotifications != null) {
+                    for (String s : allNotifications) {
+                        style.addLine(s);
+                    }
+                    mBuilder.setStyle(style);
+                }
             }
 
-            Intent resultIntent = new Intent(remoteMessage.getData().get("click_action"));
-            resultIntent.putExtra(USER_ID, remoteMessage.getData().get(FROM_USER_ID));
+            Intent resultIntent = new Intent(clickAction);
+            resultIntent.putExtra(USER_ID, fromUserId);
             resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
                     resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             mBuilder.setContentIntent(resultPendingIntent);
 
-            int notificationId = NotificationUtil.getId(remoteMessage.getData().get(FROM_USER_ID));
+            int notificationId = NotificationUtil.getId(fromUserId);
             Log.i("NOTIFICATION_ID", String.valueOf(notificationId));
             manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             createNotificationChannel();

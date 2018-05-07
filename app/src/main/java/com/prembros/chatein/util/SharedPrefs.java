@@ -10,9 +10,14 @@ import com.prembros.chatein.data.model.User;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import static com.prembros.chatein.util.Constants.BLA_BLA;
 import static com.prembros.chatein.util.Constants.CURRENT_USER;
 import static com.prembros.chatein.util.Constants.CURRENT_USER_ID;
+import static com.prembros.chatein.util.Constants.NOTIFICATIONS;
 
 public class SharedPrefs {
 
@@ -57,5 +62,35 @@ public class SharedPrefs {
 
     @Nullable public static String getUserId(@NotNull Context context) {
         return getPreferences(context).getString(CURRENT_USER_ID, null);
+    }
+
+    public static void saveNotification(@NotNull Context context, String key, String value) {
+        String previousValue = getNotification(context, key);
+        if (previousValue != null) previousValue = previousValue + "," + value;
+        else previousValue = value;
+        getPreferences(context).edit().putString(NOTIFICATIONS + key, previousValue).apply();
+    }
+
+    private static String getNotification(@NotNull Context context, String key) {
+        return getPreferences(context).getString(NOTIFICATIONS + key, null);
+    }
+
+    @Nullable public static List<String> getAllNotifications(@NotNull Context context, String key) {
+        String allValues = getNotification(context, key);
+        if (allValues == null)
+            return null;
+
+        List<String> resultList = Arrays.asList(allValues.split("\\s*,\\s*"));
+        if (resultList.size() <= 7) return resultList;
+        else return resultList.subList(resultList.size() - 7, resultList.size());
+    }
+
+    public static void clearNotifications(Context context) {
+        Map<String, ?> map = getPreferences(context).getAll();
+        for (String key : map.keySet()) {
+            if (key.contains(NOTIFICATIONS)) {
+                getPreferences(context).edit().remove(key).apply();
+            }
+        }
     }
 }

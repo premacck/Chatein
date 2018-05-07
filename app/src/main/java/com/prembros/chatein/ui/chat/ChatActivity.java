@@ -92,6 +92,7 @@ import static com.prembros.chatein.util.Constants.TYPE;
 import static com.prembros.chatein.util.FileUtil.isFileAnImage;
 import static com.prembros.chatein.util.FileUtil.isFileSizeLegal;
 import static com.prembros.chatein.util.FileUtil.isImageSizeLegal;
+import static com.prembros.chatein.util.SharedPrefs.clearNotifications;
 import static com.prembros.chatein.util.ViewUtils.disableView;
 import static com.prembros.chatein.util.ViewUtils.enableView;
 import static com.prembros.chatein.util.ViewUtils.showAlertDialog;
@@ -156,6 +157,7 @@ public class ChatActivity extends DatabaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         unbinder = ButterKnife.bind(this);
+        clearNotifications(this);
         try {
             friendUserId = getIntent().getStringExtra(USER_ID);
             try {
