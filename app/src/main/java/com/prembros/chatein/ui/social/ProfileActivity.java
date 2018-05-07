@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,9 +28,9 @@ import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.ui.base.DatabaseActivity;
 import com.prembros.chatein.util.Annotations;
 import com.prembros.chatein.util.Annotations.SocialState;
-import com.prembros.chatein.util.database.CustomValueEventListener;
 import com.prembros.chatein.util.SocialListener;
 import com.prembros.chatein.util.SocialUtils;
+import com.prembros.chatein.util.database.CustomValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -62,6 +64,7 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
     @BindView(R.id.status) TextView status;
     @BindView(R.id.friend_count) Button friendCount;
     @BindView(R.id.action_btn) Button actionButton;
+    @BindView(R.id.open_chat_btn) ImageButton openChatButton;
     @BindView(R.id.delete_request_btn) ImageView deleteRequestButton;
 
     @SocialState private int currentState;
@@ -234,18 +237,22 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
             switch (state) {
                 case ARE_FRIENDS:
                     actionButton.setText(R.string.friends);
+                    openChatButton.setVisibility(View.VISIBLE);
                     actionButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
                     break;
                 case NOT_FRIENDS:
                     actionButton.setText(R.string.add_friend);
+                    openChatButton.setVisibility(View.GONE);
                     actionButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_add, 0, 0, 0);
                     break;
                 case REQUEST_RECEIVED:
                     actionButton.setText(R.string.accept);
+                    openChatButton.setVisibility(View.VISIBLE);
                     actionButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                     break;
                 case REQUEST_SENT:
                     actionButton.setText(R.string.cancel_request);
+                    openChatButton.setVisibility(View.GONE);
                     actionButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                     break;
             }
@@ -264,5 +271,9 @@ public class ProfileActivity extends DatabaseActivity implements SocialListener 
     @Override public void actionCompleted() {
         enableView(actionButton);
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        return false;
     }
 }

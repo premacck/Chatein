@@ -8,6 +8,7 @@ public class Constants {
     public static final String MY_CHAT = "currentChat";
     public static final String MY_FRIENDS = "myFriends";
     public static final String CURRENT_USER_ID = "currentUserId";
+    public static final String DATA_URL = "data_url";
 
     //region Tables
     public static final String ROOT = "root";
@@ -22,7 +23,7 @@ public class Constants {
     public static final String MESSAGES = "messages";
     public static final String MESSAGES_ = "messages/";
     public static final String NOTIFICATIONS = "notifications";
-    static final String NOTIFICATIONS_ = "notifications/";
+    public static final String NOTIFICATIONS_ = "notifications/";
     //endregion
 
     public static final String DEFAULT = "default";

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
+import static com.prembros.chatein.util.Annotations.NotificationType.MESSAGE_NOTIFICATION;
 import static com.prembros.chatein.util.CommonUtils.showToast;
 import static com.prembros.chatein.util.Constants.CHAT;
 import static com.prembros.chatein.util.Constants.FROM;
@@ -36,6 +37,7 @@ import static com.prembros.chatein.util.Constants.MESSAGE;
 import static com.prembros.chatein.util.Constants.MESSAGES_;
 import static com.prembros.chatein.util.Constants.MESSAGE_FILES;
 import static com.prembros.chatein.util.Constants.MESSAGE_IMAGES;
+import static com.prembros.chatein.util.Constants.NOTIFICATIONS_;
 import static com.prembros.chatein.util.Constants.SEEN;
 import static com.prembros.chatein.util.Constants.TIME_STAMP;
 import static com.prembros.chatein.util.Constants.TYPE;
@@ -127,6 +129,11 @@ public class UploadService extends IntentService implements UploadCallbacks {
                             UpdateRequest.forDatabase(root)
                                     .put(MESSAGES_ + currentUserId + "/" + friendUserId + "/" + pushId, messageMap)
                                     .put(MESSAGES_ + friendUserId + "/" + currentUserId + "/" + pushId, messageMap)
+                                    .put(NOTIFICATIONS_ + friendUserId + "/" + pushId,
+                                            UpdateRequest.forMapOnly()
+                                                    .put(FROM, currentUserId)
+                                                    .put(TYPE, MESSAGE_NOTIFICATION)
+                                                    .get())
                                     .update(new DatabaseReference.CompletionListener() {
                                         @Override
                                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {

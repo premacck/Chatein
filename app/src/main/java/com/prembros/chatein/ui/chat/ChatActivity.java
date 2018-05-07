@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -75,12 +76,15 @@ import static com.prembros.chatein.ui.social.ProfileActivity.USER_ID;
 import static com.prembros.chatein.ui.social.ProfileActivity.launchProfileActivity;
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
+import static com.prembros.chatein.util.Annotations.NotificationType.MESSAGE_NOTIFICATION;
 import static com.prembros.chatein.util.CommonUtils.makeSnackBar;
 import static com.prembros.chatein.util.Constants.CHAT_;
 import static com.prembros.chatein.util.Constants.DEFAULT;
 import static com.prembros.chatein.util.Constants.FROM;
+import static com.prembros.chatein.util.Constants.FROM_USER_ID;
 import static com.prembros.chatein.util.Constants.MESSAGE;
 import static com.prembros.chatein.util.Constants.MESSAGES_;
+import static com.prembros.chatein.util.Constants.NOTIFICATIONS_;
 import static com.prembros.chatein.util.Constants.ONLINE;
 import static com.prembros.chatein.util.Constants.SEEN;
 import static com.prembros.chatein.util.Constants.TIME_STAMP;
@@ -154,6 +158,13 @@ public class ChatActivity extends DatabaseActivity {
         unbinder = ButterKnife.bind(this);
         try {
             friendUserId = getIntent().getStringExtra(USER_ID);
+            try {
+//            FOR NOTIFICATIONS
+                if (friendUserId == null)
+                    friendUserId = Objects.requireNonNull(getIntent().getExtras()).getString(FROM_USER_ID);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             CustomLinearLayoutManager manager = new CustomLinearLayoutManager(this);
             manager.setStackFromEnd(true);
@@ -365,7 +376,7 @@ public class ChatActivity extends DatabaseActivity {
         String message = chatMessageView.getText().toString();
         if (!TextUtils.isEmpty(message)) {
             DatabaseReference userMessagePush = getMessagesRef(friendUserId).push();
-            String pushId = "/" + userMessagePush.getKey();
+            String pushId = userMessagePush.getKey();
 
             updateFirebaseDatabase(pushId, message, TEXT);
             chatMessageView.setText(null);
@@ -559,10 +570,22 @@ public class ChatActivity extends DatabaseActivity {
                 .put(FROM, currentUserId)
                 .get();
 
-        UpdateRequest.forDatabase(getRootRef())
-                .put(MESSAGES_ + getMyBranch() + "/" + pushId, messageMap)
-                .put(MESSAGES_ + getFriendsBranch() + "/" + pushId, messageMap)
-                .update(getCompletionListener());
+        if (Objects.equals(chatType, TEXT)) {
+            UpdateRequest.forDatabase(getRootRef())
+                    .put(MESSAGES_ + getMyBranch() + "/" + pushId, messageMap)
+                    .put(MESSAGES_ + getFriendsBranch() + "/" + pushId, messageMap)
+                    .put(NOTIFICATIONS_ + friendUserId + "/" + pushId,
+                            UpdateRequest.forMapOnly()
+                                    .put(FROM, currentUserId)
+                                    .put(TYPE, MESSAGE_NOTIFICATION)
+                                    .get())
+                    .update(getCompletionListener());
+        } else {
+            UpdateRequest.forDatabase(getRootRef())
+                    .put(MESSAGES_ + getMyBranch() + "/" + pushId, messageMap)
+                    .put(MESSAGES_ + getFriendsBranch() + "/" + pushId, messageMap)
+                    .update(getCompletionListener());
+        }
     }
 
     private void setSeenValues() {
@@ -601,6 +624,10 @@ public class ChatActivity extends DatabaseActivity {
         enableView(sendMessage);
         enableView(showUploadOptions);
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        return false;
     }
 
     @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

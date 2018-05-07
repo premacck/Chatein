@@ -60,6 +60,7 @@
         <activity
             android:name=".ui.social.ProfileActivity"
             android:theme="@style/AppTheme.Overlay"
+            android:parentActivityName=".ui.main.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="com.prembros.blabla_TARGET_NOTIFICATION" />
@@ -69,7 +70,14 @@
         </activity>
         <activity
             android:name=".ui.chat.ChatActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:parentActivityName=".ui.main.MainActivity"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="com.prembros.blabla_TARGET_MESSAGE_NOTIFICATION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.base.ViewImageActivity"
             android:theme="@style/AppTheme.Overlay"/>
     </application>

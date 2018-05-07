@@ -10,6 +10,7 @@ import static com.prembros.chatein.util.Annotations.ChatType.FILE;
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
 import static com.prembros.chatein.util.Annotations.NotificationType.ACCEPT;
+import static com.prembros.chatein.util.Annotations.NotificationType.MESSAGE_NOTIFICATION;
 import static com.prembros.chatein.util.Annotations.NotificationType.REQUEST;
 import static com.prembros.chatein.util.Annotations.RequestType.RECEIVED;
 import static com.prembros.chatein.util.Annotations.RequestType.SENT;
@@ -33,10 +34,11 @@ public class Annotations {
     }
 
     @Retention(RetentionPolicy.CLASS)
-    @StringDef({REQUEST, ACCEPT})
+    @StringDef({REQUEST, ACCEPT, MESSAGE_NOTIFICATION})
     public @interface NotificationType {
         String REQUEST = "request";
         String ACCEPT = "accept";
+        String MESSAGE_NOTIFICATION = "message_notification";
     }
 
     @Retention(RetentionPolicy.CLASS)

@@ -140,7 +140,7 @@ public class MainRequestsAdapter extends FirebaseRecyclerAdapter<Request, MainRe
         @OnClick(R.id.accept) public void requestAccepted() {
             if (acceptButton.getText().equals(activity.get().getString(R.string.accept))) {
                 socialUtils.acceptRequest();
-            } else if (acceptButton.getText().equals(activity.get().getString(R.string.decline))) {
+            } else if (acceptButton.getText().equals(activity.get().getString(R.string.cancel_request))) {
                 socialUtils.cancelFriendRequest(activity.get(), true);
             } else if (acceptButton.getText().equals(activity.get().getString(R.string.friends))) {
                 socialUtils.unFriend(activity.get());

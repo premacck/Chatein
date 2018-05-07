@@ -17,9 +17,8 @@ import org.jetbrains.annotations.Contract;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
-import static com.prembros.chatein.ui.social.ProfileActivity.USER_ID;
+import static com.prembros.chatein.util.Annotations.NotificationType.ACCEPT;
 import static com.prembros.chatein.util.Annotations.NotificationType.REQUEST;
 import static com.prembros.chatein.util.Annotations.SocialState.ARE_FRIENDS;
 import static com.prembros.chatein.util.Annotations.SocialState.NOT_FRIENDS;
@@ -38,11 +37,17 @@ public class SocialUtils {
     private String currentUserId;
     private String friendUserId;
     private SocialListener listener;
+    private DatabaseReference root;
+    private DatabaseReference notificationRef;
+    private String notificationId;
 
     private SocialUtils(String currentUserId, String friendUserId, SocialListener listener) {
         this.currentUserId = currentUserId;
         this.friendUserId = friendUserId;
         this.listener = listener;
+        root = FirebaseDatabase.getInstance().getReference();
+        notificationRef = root.child(NOTIFICATIONS).child(friendUserId).push();
+        notificationId = notificationRef.getKey();
     }
 
     @NonNull public static SocialUtils get(String currentUserId, String friendUserId, SocialListener socialListener) {
@@ -51,28 +56,30 @@ public class SocialUtils {
 
     public void sendFriendRequest() {
         listener.actionStarted();
-        DatabaseReference root = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference notificationRef = root.child(NOTIFICATIONS).child(USER_ID).push();
-        String notificationId = notificationRef.getKey();
-        HashMap<String, String> notificationData = new HashMap<>();
-        notificationData.put(FROM, currentUserId);
-        notificationData.put(TYPE, REQUEST);
-
         UpdateRequest.forDatabase(root)
                 .put(FRIEND_REQUESTS_ + getMyBranch() + _REQUEST_TYPE, Annotations.RequestType.SENT)
                 .put(FRIEND_REQUESTS_ + getFriendsBranch() + _REQUEST_TYPE, Annotations.RequestType.RECEIVED)
-                .put(NOTIFICATIONS_ + friendUserId + "/" + notificationId, notificationData)
+                .put(NOTIFICATIONS_ + friendUserId + "/" + notificationId,
+                        UpdateRequest.forMapOnly()
+                                .put(FROM, currentUserId)
+                                .put(TYPE, REQUEST)
+                                .get())
                 .update(getListener(REQUEST_SENT));
     }
 
     public void acceptRequest() {
         listener.actionStarted();
         final String currentDate = DateFormat.getDateTimeInstance().format(new Date());
-        UpdateRequest.forDatabase(FirebaseDatabase.getInstance().getReference())
+        UpdateRequest.forDatabase(root)
                 .put(FRIENDS_ + getMyBranch() + _DATE, currentDate)
                 .put(FRIENDS_ + getFriendsBranch() + _DATE, currentDate)
                 .put(FRIEND_REQUESTS_ + getMyBranch(), null)
                 .put(FRIEND_REQUESTS_ + getFriendsBranch(), null)
+                .put(NOTIFICATIONS_ + friendUserId + "/" + notificationId,
+                        UpdateRequest.forMapOnly()
+                                .put(FROM, currentUserId)
+                                .put(TYPE, ACCEPT)
+                                .get())
                 .update(getListener(ARE_FRIENDS));
     }
 
@@ -81,7 +88,7 @@ public class SocialUtils {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 listener.actionStarted();
-                UpdateRequest.forDatabase(FirebaseDatabase.getInstance().getReference())
+                UpdateRequest.forDatabase(root)
                         .put(FRIENDS_ + getMyBranch(), null)
                         .put(FRIENDS_ + getFriendsBranch(), null)
                         .update(getListener(NOT_FRIENDS));
@@ -96,7 +103,7 @@ public class SocialUtils {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         listener.actionStarted();
-                        UpdateRequest.forDatabase(FirebaseDatabase.getInstance().getReference())
+                        UpdateRequest.forDatabase(root)
                                 .put(FRIEND_REQUESTS_ + getMyBranch(), null)
                                 .put(FRIEND_REQUESTS_ + getFriendsBranch(), null)
                                 .update(getListener(NOT_FRIENDS));
