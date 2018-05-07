@@ -45,7 +45,7 @@ public class FileUtil {
         }
     }
 
-    public static boolean isFileImege(String fileName) {
+    public static boolean isFileAnImage(String fileName) {
         try {
             return Objects.requireNonNull(getExtension(fileName)).contains("JPG") ||
                     Objects.requireNonNull(getExtension(fileName)).contains("PNG");

@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,8 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -157,24 +158,29 @@ public class MainChatsAdapter extends SelectableFirebaseAdapter<LastChat, MainCh
                                                 }
                                             });
 
-                                    OnCompleteListener<Void> onCompletionListener = new OnCompleteListener<Void>() {
+                                    OnSuccessListener<Void> successListener = new OnSuccessListener<Void>() {
                                         @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            try {
-                                                if (!task.isSuccessful() && task.getException() != null)
-                                                    task.getException().printStackTrace();
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
+                                        public void onSuccess(Void aVoid) {
+                                            Log.i("STORAGE", "Deleted successfully");
+                                        }
+                                    };
+                                    OnFailureListener failureListener = new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NotNull Exception e) {
+                                            e.printStackTrace();
                                         }
                                     };
                                     try {
-                                        imagesRef.child(selectedItems.get(index)).delete().addOnCompleteListener(onCompletionListener);
+                                        imagesRef.child(selectedItems.get(index)).delete()
+                                                .addOnSuccessListener(successListener)
+                                                .addOnFailureListener(failureListener);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                     try {
-                                        filesRef.child(selectedItems.get(index)).delete().addOnCompleteListener(onCompletionListener);
+                                        filesRef.child(selectedItems.get(index)).delete()
+                                                .addOnSuccessListener(successListener)
+                                                .addOnFailureListener(failureListener);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }

@@ -8,7 +8,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name=".base.ChateinApplication"
@@ -20,7 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <service android:name=".data.service.MyFirebaseMessagingService"
+        <service
+            android:name=".data.service.MyFirebaseMessagingService"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -28,7 +32,8 @@
         </service>
         <service android:name=".data.service.UploadService" />
 
-        <activity android:name=".base.SplashScreenActivity"
+        <activity
+            android:name=".base.SplashScreenActivity"
             android:theme="@style/AppTheme.Overlay.SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,9 +41,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.main.MainActivity"/>
-        <activity android:name=".ui.auth.StartActivity"
-            android:theme="@style/AppTheme.Overlay"/>
+        <activity android:name=".ui.main.MainActivity" />
+        <activity
+            android:name=".ui.auth.StartActivity"
+            android:theme="@style/AppTheme.Overlay" />
         <activity
             android:name=".ui.auth.RegisterActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" />
@@ -49,22 +55,23 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity
-            android:name=".ui.social.UsersListActivity" />
-        <activity
-            android:name=".ui.social.FriendsListActivity" />
+        <activity android:name=".ui.social.UsersListActivity" />
+        <activity android:name=".ui.social.FriendsListActivity" />
         <activity
             android:name=".ui.social.ProfileActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.Overlay">
+            android:theme="@style/AppTheme.Overlay"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="com.prembros.blabla_TARGET_NOTIFICATION" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.chat.ChatActivity"
+        <activity
+            android:name=".ui.chat.ChatActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.base.ViewImageActivity"
+            android:theme="@style/AppTheme.Overlay"/>
     </application>
 
 </manifest>

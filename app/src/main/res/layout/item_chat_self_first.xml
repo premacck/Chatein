@@ -50,6 +50,7 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"
+                android:transitionName="imageTransition"
                 android:contentDescription="@string/image_message" />
 
             <ProgressBar

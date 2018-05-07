@@ -52,6 +52,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
+import static com.prembros.chatein.ui.base.ViewImageActivity.launchImageViewActivity;
 import static com.prembros.chatein.util.Annotations.ChatType.FILE;
 import static com.prembros.chatein.util.Annotations.ChatType.IMAGE;
 import static com.prembros.chatein.util.Annotations.ChatType.TEXT;
@@ -75,7 +76,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
     private String friendUserId;
     private RequestManager glide;
     private ChatActivity activity;
-    private ViewImageListener listener;
 
     private boolean multiSelect;
     private Map<Integer, Chat> selectedItems;
@@ -87,7 +87,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         this.friendUserId = friendUserId;
         this.glide = glide;
         this.activity = activity;
-        if (activity != null) this.listener = activity;
         multiSelect = false;
         selectedItems = new HashMap<>();
     }
@@ -113,7 +112,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                 break;
         }
         view.setTag(R.id.tag_holder);
-        return new MessageViewHolder(view, listener, this);
+        return new MessageViewHolder(view, this);
     }
 
     @Override public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
@@ -155,10 +154,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
             e.printStackTrace();
             return isSelf ? SELF_MESSAGE_FIRST : FRIENDS_MESSAGE_FIRST;
         }
-    }
-
-    @Nullable static ImageView getImage(@NotNull View itemView) {
-        return (ImageView) itemView.findViewById(R.id.chat_image);
     }
 
     @Override public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -207,9 +202,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                                         String friendUserBranch = chatBranch + "/" + key;
                                         try {
                                             if (Objects.equals(selectedItems.get(index).getType(), IMAGE)) {
-                                                deleteImageFromStorage(requireNonNull(key), friendUserBranch, index);
+                                                deleteImageFromStorage(requireNonNull(key), friendUserBranch);
                                             }
-                                            else deleteChat(friendUserBranch, index);
+                                            else deleteChat(friendUserBranch);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -232,14 +227,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         return true;
     }
 
-    private void finishModeAndNotify() {
-        multiSelect = false;
-        selectedItems.clear();
-        activity.notifyDataSetChanged();
-        mode.finish();
-    }
-
-    private void deleteChat(String friendUserBranch, final int index) {
+    private void deleteChat(String friendUserBranch) {
         UpdateRequest.forDatabase(activity.getRootRef())
                 .put(MESSAGES_ + friendUserBranch, null)
                 .update(new DatabaseReference.CompletionListener() {
@@ -251,7 +239,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                 });
     }
 
-    private void deleteImageFromStorage(@NotNull final String key, final String friendUserBranch, int index) {
+    private void deleteImageFromStorage(@NotNull final String key, final String friendUserBranch) {
         final StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(MESSAGE_IMAGES);
         try {
             storageRef.child(currentUserId).child(friendUserId).child(key + ".jpg").delete()
@@ -266,7 +254,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                             }
                         }
                     });
-            deleteChat(friendUserBranch, index);
+            deleteChat(friendUserBranch);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -274,9 +262,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
     @Override public void onDestroyActionMode(ActionMode mode) {
         this.mode = mode;
+        finishModeAndNotify();
+    }
+
+    private void finishModeAndNotify() {
         multiSelect = false;
         selectedItems.clear();
-        activity.notifyDataSetChanged();
+        notifyDataSetChanged();
         mode.finish();
     }
 
@@ -292,13 +284,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         @BindView(R.id.time) TextView timeView;
         @BindView(R.id.image_progress) ProgressBar progressBar;
 
-        private final ViewImageListener listener;
         private final ChatAdapter adapter;
         private Chat chat;
 
-        MessageViewHolder(View itemView, ViewImageListener listener, ChatAdapter adapter) {
+        MessageViewHolder(View itemView, ChatAdapter adapter) {
             super(itemView);
-            this.listener = listener;
             this.adapter = adapter;
             ButterKnife.bind(this, itemView);
         }
@@ -379,7 +369,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
         @OnClick(R.id.chat_image) public void viewImage() {
             if (!adapter.multiSelect) {
-                if (listener != null) listener.viewImage(getAdapterPosition());
+//                if (listener != null) listener.viewImage(getAdapterPosition());
+                launchImageViewActivity(adapter.activity, chat.getMessage(), chatImageView);
             }
             else selectItem(getAdapterPosition());
         }
@@ -426,9 +417,5 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
                 adapter.mode.invalidate();
             }
         }
-    }
-
-    public interface ViewImageListener {
-        void viewImage(int position);
     }
 }

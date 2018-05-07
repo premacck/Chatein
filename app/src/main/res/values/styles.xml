@@ -10,6 +10,7 @@
         <item name="windowActionModeOverlay">true</item>
         <!--  For Custom Action Mode Background Color/Drawable -->
         <item name="actionModeBackground">@color/colorPrimary</item>
+        <item name="android:windowActivityTransitions">true</item>
     </style>
 
     <style name="AppTheme.Overlay">

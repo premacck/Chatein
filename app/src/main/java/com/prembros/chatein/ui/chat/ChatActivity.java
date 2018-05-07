@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -30,10 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.alexvasilkov.gestures.animation.ViewPositionAnimator;
-import com.alexvasilkov.gestures.transition.GestureTransitions;
-import com.alexvasilkov.gestures.transition.ViewsTransitionAnimator;
-import com.alexvasilkov.gestures.transition.tracker.SimpleTracker;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -47,7 +42,6 @@ import com.prembros.chatein.data.model.UpdateRequest;
 import com.prembros.chatein.data.model.User;
 import com.prembros.chatein.data.service.VideoUploadReceiver;
 import com.prembros.chatein.ui.base.DatabaseActivity;
-import com.prembros.chatein.ui.main.adapter.ImagePagerAdapter;
 import com.prembros.chatein.util.Annotations;
 import com.prembros.chatein.util.Annotations.ChatType;
 import com.prembros.chatein.util.CustomLinearLayoutManager;
@@ -91,14 +85,14 @@ import static com.prembros.chatein.util.Constants.ONLINE;
 import static com.prembros.chatein.util.Constants.SEEN;
 import static com.prembros.chatein.util.Constants.TIME_STAMP;
 import static com.prembros.chatein.util.Constants.TYPE;
-import static com.prembros.chatein.util.FileUtil.isFileImege;
+import static com.prembros.chatein.util.FileUtil.isFileAnImage;
 import static com.prembros.chatein.util.FileUtil.isFileSizeLegal;
 import static com.prembros.chatein.util.FileUtil.isImageSizeLegal;
 import static com.prembros.chatein.util.ViewUtils.disableView;
 import static com.prembros.chatein.util.ViewUtils.enableView;
 import static com.prembros.chatein.util.ViewUtils.showAlertDialog;
 
-public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewImageListener {
+public class ChatActivity extends DatabaseActivity {
 
     private static final int TOTAL_ITEMS_TO_LOAD = 15;
     private static final int GALLERY_PICK = 101;
@@ -117,8 +111,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     @BindView(R.id.chat_send) ImageView sendMessage;
     @BindView(R.id.chat_message) EditText chatMessageView;
     @BindView(R.id.chats_list) RecyclerView recyclerView;
-    @BindView(R.id.transition_full_background) View background;
-    @BindView(R.id.transition_pager) ViewPager viewPager;
 
     private boolean loading;
     private int itemPosition;
@@ -128,16 +120,14 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     private String friendName;
 
     private ChatAdapter adapter;
-    private ImagePagerAdapter pagerAdapter;
     private Query initialChatQuery;
     private Query moreChatsQuery;
     private ChatEventListener initialChatListener;
     private ChatEventListener moreChatListener;
     private CustomValueEventListener friendInfoListener;
     private CustomValueEventListener myChatListener;
-    private ViewsTransitionAnimator<Integer> animator;
     private final List<Chat> chatList = new ArrayList<>();
-    private boolean reversed;
+    private boolean isUploadOptionsLayoutOpen;
 
     public static void launchChatActivity(@NotNull Context from, String userId) {
         Intent intent = new Intent(from, ChatActivity.class);
@@ -147,7 +137,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
     }
 
     @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (reversed) {
+        if (isUploadOptionsLayoutOpen) {
             Rect rect = new Rect();
             uploadOptionsLayout.getGlobalVisibleRect(rect);
             if (!rect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
@@ -165,8 +155,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
         try {
             friendUserId = getIntent().getStringExtra(USER_ID);
 
-            pagerAdapter = new ImagePagerAdapter(viewPager, chatList, glide);
-            viewPager.setAdapter(pagerAdapter);
             CustomLinearLayoutManager manager = new CustomLinearLayoutManager(this);
             manager.setStackFromEnd(true);
             recyclerView.setLayoutManager(manager);
@@ -178,8 +166,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
             loadChats();
             setupActionBar();
             updateChatValueInDatabase();
-
-            initializeImageAnimator();
 
             setOnScrollChangedListener();
         } catch (Exception e) {
@@ -203,8 +189,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
                                 previousKey = dataSnapshot.getKey();
                             }
                             adapter.notifyItemInserted(chatList.size() - 1);
-                            pagerAdapter.notifyDataSetChanged();
-
                             recyclerView.scrollToPosition(chatList.size() - 1);
                         }
                     }
@@ -287,41 +271,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
         getMyChatRef().addValueEventListener(myChatListener);
     }
 
-    private void initializeImageAnimator() {
-        final SimpleTracker listTracker = new SimpleTracker() {
-            @Nullable
-            @Override
-            public View getViewAt(int position) {
-                CustomLinearLayoutManager manager = (CustomLinearLayoutManager) recyclerView.getLayoutManager();
-                int first = manager.findFirstVisibleItemPosition();
-                int last = manager.findLastVisibleItemPosition();
-                if (position < first || position > last) {
-                    return null;
-                } else {
-                    View itemView = recyclerView.getChildAt(position - first);
-                    return ChatAdapter.getImage(itemView);
-                }
-            }
-        };
-
-        final SimpleTracker pagerTracker = new SimpleTracker() {
-            @Nullable @Override
-            public View getViewAt(int position) {
-                ImagePagerAdapter.ImageViewHolder holder = pagerAdapter.getViewHolder(position);
-                return holder == null ? null : ImagePagerAdapter.getImage(holder);
-            }
-        };
-
-        animator = GestureTransitions.from(recyclerView, listTracker).into(viewPager, pagerTracker);
-        animator.addPositionUpdateListener(new ViewPositionAnimator.PositionUpdateListener() {
-            @Override
-            public void onPositionUpdate(float position, boolean isLeaving) {
-                background.setVisibility(position == 0f ? View.INVISIBLE : View.VISIBLE);
-                background.getBackground().setAlpha((int) (255 * position));
-            }
-        });
-    }
-
     private void setOnScrollChangedListener() {
         if (recyclerView != null) {
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -362,7 +311,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
 
                             adapter.notifyDataSetChanged();
                             if (Objects.equals(chat.getType(), IMAGE))
-                                pagerAdapter.notifyDataSetChanged();
                             if (itemPosition == 1) lastKey = dataSnapshot.getKey();
                             ((CustomLinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset(15, 0);
 
@@ -376,10 +324,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
             }
         };
         moreChatsQuery.addChildEventListener(moreChatListener);
-    }
-
-    @Override public void viewImage(int position) {
-        animator.enter(position, true);
     }
 
     @OnClick(R.id.back_btn) public void goBack() {
@@ -439,24 +383,24 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
         int w = uploadOptionsLayout.getWidth();
         int h = uploadOptionsLayout.getHeight();
 
-        int startRadius = reversed ? (int) Math.hypot(w, h) : 0;
-        int endRadius = reversed ? 0 : (int) Math.hypot(w, h);
+        int startRadius = isUploadOptionsLayoutOpen ? (int) Math.hypot(w, h) : 0;
+        int endRadius = isUploadOptionsLayoutOpen ? 0 : (int) Math.hypot(w, h);
 
         int cx = (int) (showUploadOptions.getX());
         int cy = (int) (showUploadOptions.getY() + showUploadOptions.getHeight() * 3);
         Animator revealAnimator = ViewAnimationUtils.createCircularReveal(uploadOptionsLayout, cx, cy, startRadius, endRadius);
         revealAnimator.setInterpolator(new DecelerateInterpolator());
         revealAnimator.setDuration(280);
-        if (reversed)
+        if (isUploadOptionsLayoutOpen)
             revealAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
                     uploadOptionsLayout.setVisibility(View.GONE);
-                    reversed = false;
+                    isUploadOptionsLayoutOpen = false;
                 }
             });
-        else reversed = true;
+        else isUploadOptionsLayoutOpen = true;
 
         uploadOptionsLayout.setVisibility(View.VISIBLE);
         revealAnimator.start();
@@ -514,7 +458,7 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
 
                             if (!isFileSizeLegal(this, data.getData())) return;
 
-                            if (isFileImege(displayName)) {
+                            if (isFileAnImage(displayName)) {
                                 startImageCropper(fileUri);
                                 return;
                             }
@@ -577,7 +521,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
                                 chatList.get(chatList.size() - 1).setMessage(downloadUrl);
                                 chatList.get(chatList.size() - 1).setType(chatType);
                                 adapter.notifyItemChanged(chatList.size() - 1);
-                                pagerAdapter.notifyDataSetChanged();
                                 actionCompleted();
                                 break;
                             case Annotations.UploadCallback.UPLOAD_ERROR:
@@ -648,11 +591,6 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
         return friendUserId + "/" + currentUserId;
     }
 
-    public void notifyDataSetChanged() {
-        adapter.notifyDataSetChanged();
-        pagerAdapter.notifyDataSetChanged();
-    }
-
     public void actionInProgress() {
         disableView(sendMessage, false);
         disableView(showUploadOptions, false);
@@ -677,13 +615,12 @@ public class ChatActivity extends DatabaseActivity implements ChatAdapter.ViewIm
         getUsersRef().child(friendUserId).removeEventListener(friendInfoListener);
         getMyChatRef().removeEventListener(myChatListener);
         adapter = null;
-        pagerAdapter = null;
         super.onDestroy();
     }
 
     @Override public void onBackPressed() {
-        if (!animator.isLeaving()) {
-            animator.exit(true);
+        if (isUploadOptionsLayoutOpen) {
+            toggleViewAnimator();
         } else {
             super.onBackPressed();
         }
