@@ -43,15 +43,6 @@ public class SharedPrefs {
         return getPreferences(context).getString(CHAT + username, null);
     }
 
-    public static void clearAllChats(Context context) {
-        Map<String, ?> map = getPreferences(context).getAll();
-        for (String key : map.keySet()) {
-            if (key.contains(CHAT)) {
-                getPreferences(context).edit().remove(key).apply();
-            }
-        }
-    }
-
     public static void saveUser(@NotNull Context context, User user) {
         getPreferences(context)
                 .edit()
@@ -106,10 +97,10 @@ public class SharedPrefs {
         else return resultList.subList(resultList.size() - 7, resultList.size());
     }
 
-    public static void clearNotifications(Context context) {
+    public static void clearNotificationsAndChats(Context context) {
         Map<String, ?> map = getPreferences(context).getAll();
         for (String key : map.keySet()) {
-            if (key.contains(NOTIFICATIONS)) {
+            if (key.contains(NOTIFICATIONS) || key.contains(CHAT)) {
                 getPreferences(context).edit().remove(key).apply();
             }
         }
