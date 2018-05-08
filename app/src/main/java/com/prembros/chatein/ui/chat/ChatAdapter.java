@@ -179,20 +179,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         try {
             switch (item.getItemId()) {
                 case R.id.action_copy:
-                    Chat chat = selectedItems.get(0);
-                    if (Objects.equals(chat.getType(), TEXT)) {
-                        StringBuilder text = new StringBuilder();
-                        text.append(chat.getMessage());
-                        ClipData clip = ClipData.newPlainText(text.toString(), text.toString());
-                        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                        if (clipboard != null)
-                            clipboard.setPrimaryClip(clip);
-                        showToast(activity, R.string.copied_to_clipboard);
-                        finishModeAndNotify();
-                    } else if (Objects.equals(chat.getType(), IMAGE)) {
-                        showToast(activity, R.string.cannot_copy_image);
-                    } else
-                        showToast(activity, R.string.cannot_copy_file);
+                    for (Chat chat : selectedItems.values()) {
+                        if (Objects.equals(chat.getType(), TEXT)) {
+                            StringBuilder text = new StringBuilder();
+                            text.append(chat.getMessage());
+                            ClipData clip = ClipData.newPlainText(text.toString(), text.toString());
+                            ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                            if (clipboard != null)
+                                clipboard.setPrimaryClip(clip);
+                            showToast(activity, R.string.copied_to_clipboard);
+                            finishModeAndNotify();
+                        } else if (Objects.equals(chat.getType(), IMAGE)) {
+                            showToast(activity, R.string.cannot_copy_image);
+                        } else
+                            showToast(activity, R.string.cannot_copy_file);
+                    }
                     break;
                 case R.id.action_delete:
                     String suffix = selectedItems.size() <=1 ? " this message?\n\n" : " selected messages?\n\n";

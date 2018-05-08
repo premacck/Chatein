@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.prembros.chatein.util.Constants.BLA_BLA;
+import static com.prembros.chatein.util.Constants.CHAT;
 import static com.prembros.chatein.util.Constants.CURRENT_USER;
 import static com.prembros.chatein.util.Constants.CURRENT_USER_ID;
 import static com.prembros.chatein.util.Constants.NOTIFICATIONS;
@@ -29,6 +30,26 @@ public class SharedPrefs {
 
     private static SharedPreferences getPreferences(@NotNull Context context) {
         return context.getSharedPreferences(BLA_BLA, Context.MODE_PRIVATE);
+    }
+
+    public static void saveChat(Context context, String userId, String chat) {
+        getPreferences(context)
+                .edit()
+                .putString(CHAT + userId, chat)
+                .apply();
+    }
+
+    public static String getChat(Context context, String username) {
+        return getPreferences(context).getString(CHAT + username, null);
+    }
+
+    public static void clearAllChats(Context context) {
+        Map<String, ?> map = getPreferences(context).getAll();
+        for (String key : map.keySet()) {
+            if (key.contains(CHAT)) {
+                getPreferences(context).edit().remove(key).apply();
+            }
+        }
     }
 
     public static void saveUser(@NotNull Context context, User user) {

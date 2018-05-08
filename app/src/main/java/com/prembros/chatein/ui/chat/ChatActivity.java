@@ -47,6 +47,7 @@ import com.prembros.chatein.util.Annotations;
 import com.prembros.chatein.util.Annotations.ChatType;
 import com.prembros.chatein.util.CustomLinearLayoutManager;
 import com.prembros.chatein.util.DateUtil;
+import com.prembros.chatein.util.SharedPrefs;
 import com.prembros.chatein.util.database.ChatEventListener;
 import com.prembros.chatein.util.database.CustomValueEventListener;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -166,6 +167,11 @@ public class ChatActivity extends DatabaseActivity {
                     friendUserId = Objects.requireNonNull(getIntent().getExtras()).getString(FROM_USER_ID);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+
+            String previouslyTypedMessage = SharedPrefs.getChat(this, friendUserId);
+            if (previouslyTypedMessage != null && !previouslyTypedMessage.isEmpty()) {
+                chatMessageView.setText(previouslyTypedMessage);
             }
 
             CustomLinearLayoutManager manager = new CustomLinearLayoutManager(this);
@@ -636,6 +642,13 @@ public class ChatActivity extends DatabaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override protected void onPause() {
+        if (chatMessageView != null && !chatMessageView.getText().toString().isEmpty()) {
+            SharedPrefs.saveChat(this, friendUserId, chatMessageView.getText().toString());
+        }
+        super.onPause();
     }
 
     @Override protected void onDestroy() {
