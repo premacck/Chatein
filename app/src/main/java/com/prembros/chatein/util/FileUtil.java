@@ -103,6 +103,28 @@ public class FileUtil {
         return false;
     }
 
+    public static void deleteCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            deleteDir(dir);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Contract("null -> false") private static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                boolean success = deleteDir(new File(dir, aChildren));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else return dir != null && dir.isFile() && dir.delete();
+    }
+
 //    public static String getNameFromUri(@NotNull Context context, Uri uri) {
 //        String fileName = null;
 //        String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};

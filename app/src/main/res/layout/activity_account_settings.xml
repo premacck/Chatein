@@ -15,6 +15,7 @@
         android:scaleType="center"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="24dp"
         app:srcCompat="@drawable/ic_arrow_back"
         android:contentDescription="@string/back_button" />
 
@@ -24,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp">
+        android:layout_marginTop="84dp">
 
         <ProgressBar
             android:id="@+id/progress_bar"

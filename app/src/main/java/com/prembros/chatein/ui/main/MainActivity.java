@@ -29,6 +29,7 @@ import static com.prembros.chatein.ui.auth.StartActivity.launchStartActivity;
 import static com.prembros.chatein.ui.social.UsersListActivity.launchUsersActivity;
 import static com.prembros.chatein.util.CommonUtils.saveUserLocally;
 import static com.prembros.chatein.util.Constants.ONLINE;
+import static com.prembros.chatein.util.FileUtil.deleteCache;
 import static com.prembros.chatein.util.SharedPrefs.removeSavedUser;
 
 public class MainActivity extends DatabaseActivity {
@@ -92,6 +93,7 @@ public class MainActivity extends DatabaseActivity {
                 DatabaseViewModel.destroyInstance();
                 FirebaseAuth.getInstance().signOut();
                 removeSavedUser(this);
+                deleteCache(getApplicationContext());
                 launchStartActivity(this);
                 finish();
                 return true;
