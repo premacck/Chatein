@@ -2,6 +2,8 @@
 
 A simple chat app for android
 
+[Play Store](https://play.google.com/store/apps/details?id=com.prembros.blabla)
+
 ### Prerequisites
 
 Android studio 3 or above
